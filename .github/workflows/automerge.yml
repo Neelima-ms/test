@@ -15,7 +15,8 @@ jobs:
     steps:
       - name: Checkout code 
         uses: actions/checkout@v2
-    
+        with:
+          ref: ${{ github.event.ref }}
 #       - name: Use Node.js ${{ matrix.node-version }}
 #         uses: actions/setup-node@2
 #         with: 
@@ -23,26 +24,28 @@ jobs:
           
 #       - name: Install dependenceies
 #         run: npm ci
-      - name: Merge changes from release branches
+      - name: Merge Release Branches to Default Branch
         run: |
           git config --global user.name "Neelima"
           git config --global user.email "neelimamaddela95@gmail.com"
-          git ls-remote --heads origin
+          git checkout -B default
           git branch -a
-          git merge --no-ff --no-edit release
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git merge --no-ff ref: ${{ github.event.ref }}
+          git push origin default
+        continue-on-error: true
+        
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
          
       - name: Send email notification
         if: failure()
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.gamil.com
+          server_address: smtp.gmail.com
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: Merge conflict detected 
-          body: "Conflicts detected in the release branch to deafult branch"
-          from: Neelima
-          to: neelimamaddela95@gmail.com
+          subject: "Auto-Merge failed for release branch ${{ github.event.ref }}"
+          body: "There were merge conflicts while attempting to auto-merge the release branch ${{ github.event.ref }} to the default branch."
+#           from: Neelima
+          to: "neelimamaddela95@gmail.com"
