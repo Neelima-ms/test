@@ -28,6 +28,7 @@ jobs:
           git config --global user.name "Neelima"
           git config --global user.email "neelimamaddela95@gmail.com"
           git ls-remote --heads origin
+          git branch -a
           git merge --no-ff --no-edit release
           git push
         env:
