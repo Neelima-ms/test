@@ -27,7 +27,7 @@ jobs:
         run: |
           git config --global user.name "Neelima"
           git config --global user.email "neelimamaddela95@gmail.com"
-          git checkout --track origin/main
+          git ls-remote --heads origin
           git merge --no-ff --no-edit release
           git push
         env:
