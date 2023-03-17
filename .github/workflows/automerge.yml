@@ -25,18 +25,23 @@ jobs:
 #       - name: Install dependenceies
 #         run: npm ci
       - name: Merge Release Branches to Default Branch
-        run: |
-          git config --global user.name "Neelima"
-          git config --global user.email "neelimamaddela95@gmail.com"
-          git checkout -B default
-          git branch -a
-          git merge --no-ff ref: ${{ github.event.ref }}
-          git push origin default
-        continue-on-error: true
+        uses: pullreminders/merge@v1
+        with:
+          github_token: ${{ secrets.GITHUB-TOKEN }}
+          branch: ${{ github.ref }}
+          method: squash
         
 #         env:
 #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         
+      - name: check for merge conflicts
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "merge conflct detected"
+            echo "$(git status)"
+            echo "conflicts detected in the default branch or release branch" | mail -s "Merge conflict" neelimamddela95@gmail.com
+            exit 1
+            fi
+            
       - name: Send email notification
         if: failure()
         uses: dawidd6/action-send-mail@v3
@@ -45,7 +50,7 @@ jobs:
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "Auto-Merge failed for release branch ${{ github.event.ref }}"
-          body: "There were merge conflicts while attempting to auto-merge the release branch ${{ github.event.ref }} to the default branch."
+          subject: "Auto-Merge failed for release branch"
+          body: "There were merge conflicts while attempting to auto-merge the release branch."
 #           from: Neelima
           to: "neelimamaddela95@gmail.com"
