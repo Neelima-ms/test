@@ -35,7 +35,7 @@ jobs:
          
       - name: Send email notification
         if: failure()
-        uses: dawidd6/action-send-mail@v3.1.1
+        uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gamil.com
           server_port: 587
