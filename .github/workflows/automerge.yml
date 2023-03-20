@@ -4,53 +4,67 @@ on:
  push:
      branches:
        - 'release/*'
+env:
+  DEFAULT_BRANCH: main
+  RELEASE_BRANCH: ${{ github.ref }}
 
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
-    
-#     strategy:
-#       matrix:
-#         node-version: [14.x]
     steps:
       - name: Checkout code 
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.ref }}
-#       - name: Use Node.js ${{ matrix.node-version }}
-#         uses: actions/setup-node@2
-#         with: 
-#           node-version: ${{ matrix.node-version }}
+          ref: ${{ env.RELEASE_BRANCH }}
           
-#       - name: Install dependenceies
-#         run: npm ci
-      - name: Merge Release Branches to Default Branch
-        uses: pullreminders/merge@v1
-        with:
-          github_token: ${{ secrets.GITHUB-TOKEN }}
-          branch: ${{ github.ref }}
-          method: squash
-        
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: check for merge conflicts
+      - name: Merge changes from release branche to default branch
         run: |
+          git config --global user.email "neelimamaddela95@gmail.com"
+          git config --global user.name "Neelima"
+          git fetch
+          git merge --no-commit --no-ff "${{ env.RELEASE_BRANCH }}"
           if [ -n "$(git status --porcelain)" ]; then
-            echo "merge conflct detected"
+            echo "merge conflict detected in release branch"
             echo "$(git status)"
-            echo "conflicts detected in the default branch or release branch" | mail -s "Merge conflict" neelimamddela95@gmail.com
+            echo "Conflict detected in the release branch" | mail -s "Merge conflict detected" neelimamaddela95@gmail.com
             exit 1
-            fi
+          fi
+          git commit -m "auto-merge changes from ${{ env.RELEASE_BRANCH }} branch"
+          git push origin ${{ env.DEFAULT_BRANCH }}
+       
+      - name: Check for merge conflicts in default branch
+        run: |
+          git fetch
+          git merge --no-commit --no-ff "${{ env.DEFAULT_BRANCH }}"
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "merge conflict detected in default branch"
+            echo "$(git status)"
+            echo "Conflict detected in the default branch" | mail -s "Merge conflict detected" neelimamaddela95@gmail.com
+            exit 1
+          fi
+          git merge --abort
             
+      - name: Push changes to default branch
+        run: |
+           git config --global user.name "Neelima"
+           git config --global user.email "neelimamaddela95@gmail.com"
+           git commit -m "initial commit"
+           git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+  send-email:
+    needs: [auto-merge]
+    runs-on: ubuntu-latest
+    
+    steps:
       - name: Send email notification
-        if: failure()
-        uses: dawidd6/action-send-mail@v3
+        uses: jakejarvis/send-email-action@master
         with:
-          server_address: smtp.gmail.com
+          server_address: smtp.gamil.com
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "Auto-Merge failed for release branch"
-          body: "There were merge conflicts while attempting to auto-merge the release branch."
-#           from: Neelima
-          to: "neelimamaddela95@gmail.com"
+          subject: Merge conflict detected 
+          body: "Conflicts detected in the release branch to deafult branch"
+          to: neelimamaddela95@gmail.com
