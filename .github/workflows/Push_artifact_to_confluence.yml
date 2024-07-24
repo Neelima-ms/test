@@ -1,0 +1,23 @@
+name: Push artifact to Confluence
+on:
+  workflow_dispatch: {}
+
+jobs:
+  Push-artifact:
+   runs-on: ubuntu-latest
+   steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4
+
+      - name: Setup Tag
+        run: |
+             echo "Tag_Name=Test_$(date +'%m_%d')" >> $GITHUB_ENV 
+
+      - name: save tag  
+        run: echo "The TAG used for deployment:Test_$(date +'%m_%d')" > Tag.txt
+            
+      - name: TAG 
+        uses: actions/upload-artifact@v4.3.3 
+        with:
+            name: ${{ env.Tag_Name }}
+            path: Tag.txt   
