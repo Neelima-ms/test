@@ -21,3 +21,18 @@ jobs:
         with:
             name: ${{ env.Tag_Name }}
             path: Tag.txt   
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+            name: ${{ env.Tag_Name }}
+            path: Tag.txt 
+            
+      - name: Publish Confluence
+        uses: "aplr/action-publish-confluence@main"
+        with:
+          url: https://neelimasudhakar.atlassian.net/wiki
+          access_token: ATATT3xFfGF00Akh6J8JHh3tKwpqMEgfyFTSqRiIaOc0KHCdb2WdX3zoE_NYhMrG6p_fYY5ui6t0U4NGCH2Ga9akL2zgu6_DnRMobi3uiUMDrTEmIDKH0sEa5_wkv7ufHF4RlHxNjk8G_76Gr0tyVpB0jyeOW846AOHHAopa0kFaMmLexu_Zp5E=893E6377
+          page_id: 131088
+          attachments: |
+            test.txt=Tag.txt
