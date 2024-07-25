@@ -32,8 +32,8 @@ jobs:
         uses: "aplr/action-publish-confluence@main"
         with:
           url: https://neelimasudhakar.atlassian.net/wiki
-          # username: 
-          # password: Neelima@12
+          # username: NeelimaMaddela 
+          # password: ${{ secrets.API_ACCESS_TOKEN }}
           access_token: ${{ secrets.API_ACCESS_TOKEN }}
           page_id: 131088
           attachments: |
