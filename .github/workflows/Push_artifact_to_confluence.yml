@@ -37,4 +37,4 @@ jobs:
           access_token: "${{ secrets.API_ACCESS_TOKEN }}"
           page_id: 131088
           attachments: |
-            test.txt=Tag.txt
+            test.txt=./Tag.txt
