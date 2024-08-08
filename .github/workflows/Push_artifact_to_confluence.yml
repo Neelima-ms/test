@@ -15,9 +15,7 @@ jobs:
       - name: Publish Markdown to Confluence
         uses: markdown-confluence/publish@v1
         with:
-          confluenceBaseUrl: https://neelimasudhakar.atlassian.net/wiki
-          confluenceParentId: 1867778
-          atlassianUserName: NeelimaMaddela
+          configFile: .markdown-confluence.json 
           atlassianApiToken: ${{ secrets.ATLASSIAN_API_TOKEN }}
 
 
