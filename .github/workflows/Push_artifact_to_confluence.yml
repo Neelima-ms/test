@@ -19,47 +19,4 @@ jobs:
           confluenceParentId: 1867778
           atlassianUserName: NeelimaMaddela
           atlassianApiToken: ${{ secrets.ATLASSIAN_API_TOKEN }}
-          folderToPublish: docs
-          contentRoot: /docs
-          configFile: .markdown-confluence.json
-
-
-
-
-
-
-
-
-
-
-        
-
-      # - name: Setup Tag
-      #   run: |
-      #        echo "Tag_Name=Test_$(date +'%m_%d')" >> $GITHUB_ENV 
-
-      # - name: save tag  
-      #   run: echo "The TAG used for deployment:Test_$(date +'%m_%d')" > Tag.txt
-            
-      # - name: TAG 
-      #   uses: actions/upload-artifact@v4.3.3 
-      #   with:
-      #       name: ${{ env.Tag_Name }}
-      #       path: Tag.txt   
-
-      # - name: Download Artifact
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #       name: ${{ env.Tag_Name }}
-      #       # path: Tag.txt 
-            
-      # - name: Publish Confluence
-      #   uses: "aplr/action-publish-confluence@main"
-      #   with:
-      #     url: "https://neelimasudhakar.atlassian.net/wiki"
-      #     # username: NeelimaMaddela 
-      #     # password: ${{ secrets.API_ACCESS_TOKEN }}
-      #     access_token: "${{ secrets.API_ACCESS_TOKEN }}"
-      #     page_id: 1867778
-      #     attachments: |
-      #       test.txt=./Tag.txt
+   
