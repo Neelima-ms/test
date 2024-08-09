@@ -8,15 +8,14 @@ jobs:
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
-
-      - name: Checkout code
-        uses: actions/checkout@v2
       
       - name: Publish Markdown to Confluence
-        uses: markdown-confluence/publish@v5
+        uses: TTengs/MarkdownToConfluence@v3
         with:
+          fileslocation: './doc'
           confluenceBaseUrl: https://neelimasudhakar.atlassian.net/wiki
-          confluenceParentId: 1867778
+          confluence_space_key: '~7120200b04a4666ade43ecb8ed95abf53dd3a4'
+          # confluenceParentId: 1867778
           atlassianUserName: NeelimaMaddela
           atlassianApiToken: ${{ secrets.ATLASSIAN_API_TOKEN }}
    
