@@ -13,9 +13,9 @@ jobs:
         uses: TTengs/MarkdownToConfluence@v3
         with:
           fileslocation: './doc'
-          confluenceBaseUrl: https://neelimasudhakar.atlassian.net/wiki
+          confluence_url: https://neelimasudhakar.atlassian.net/wiki
           confluence_space_key: '~7120200b04a4666ade43ecb8ed95abf53dd3a4'
           # confluenceParentId: 1867778
-          atlassianUserName: NeelimaMaddela
-          atlassianApiToken: ${{ secrets.ATLASSIAN_API_TOKEN }}
+          auth_username: NeelimaMaddela
+          auth_api_token: ${{ secrets.ATLASSIAN_API_TOKEN }}
    
