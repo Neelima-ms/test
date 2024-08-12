@@ -12,10 +12,11 @@ jobs:
       - name: Publish Markdown to Confluence
         uses: TTengs/MarkdownToConfluence@v3
         with:
-          fileslocation: './doc'
-          confluence_url: https://neelimasudhakar.atlassian.net/wiki
+          fileslocation: './docs'
+          should_upload: true
+          confluence_url: 'https://neelimasudhakar.atlassian.net/wiki'
           confluence_space_key: '~7120200b04a4666ade43ecb8ed95abf53dd3a4'
-          # confluenceParentId: 1867778
           auth_username: NeelimaMaddela
-          auth_api_token: ${{ secrets.ATLASSIAN_API_TOKEN }}
+          auth_api_token: ${{ secrets.AUTH_API_TOKEN }}
+          is_preview: false
    
