@@ -8,6 +8,26 @@ jobs:
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
+
+      - name: get commits 
+        run: |
+         cd test 
+         echo "Latest commits:" >> README.md
+         REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
+         echo "Repo 1: $REPO_COMMITS" >> README.md
+      - name: Update .md File
+        run: |
+         echo -e "\n Latest commits\n" >> README.md
+         echo "Repo 1" >> README.md
+         echo $REPO_COMMITS" >> README.md
+
+      - name: Update .md File  
+        run: |
+             git config --global user.email "neelimamaddela95@gmail.com"
+             git config --global user.name "Neelima"
+             git add commits.md
+             git commit -m "update commits.md with latest commit"
+             git push origin main
       
       # - name: Publish Markdown to Confluence
       #   uses: TTengs/MarkdownToConfluence@v3
