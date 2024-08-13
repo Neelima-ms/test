@@ -14,11 +14,6 @@ jobs:
          echo "Latest commits:" >> README.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
          echo "Repo 1: $REPO_COMMITS" >> README.md
-      # - name: Update .md File
-      #   run: |
-      #    echo -e "\n Latest commits\n" >> README.md
-      #    echo "Repo 1" >> README.md
-      #    echo "$REPO_COMMITS" >> README.md
 
       - name: Update .md File  
         run: |
@@ -27,7 +22,16 @@ jobs:
              git add README.md
              git commit -m "update commits.md with latest commit"
              git push origin main
-      
+
+      - uses: cupcakearmy/confluence-markdown-sync@v1
+        with:
+          from: './README.md'
+          to: '1867778' # The confluence page id where to write the output
+          cloud: neelimasudhakar
+          user: neelimasudhakar95@gmail.com
+          token: ${{ secrets.AUTH_API_TOKEN }}
+
+
       # - name: Publish Markdown to Confluence
       #   uses: TTengs/MarkdownToConfluence@v3
       #   with:
@@ -38,12 +42,4 @@ jobs:
       #     auth_username: NeelimaMaddela
       #     auth_api_token: ${{ secrets.AUTH_API_TOKEN }}
       #     is_preview: false
-
-      - uses: cupcakearmy/confluence-markdown-sync@v1
-        with:
-          from: './README.md'
-          to: '1867778' # The confluence page id where to write the output
-          cloud: neelimasudhakar
-          user: neelimasudhakar95@gmail.com
-          token: ${{ secrets.AUTH_API_TOKEN }}
    
