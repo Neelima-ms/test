@@ -14,11 +14,11 @@ jobs:
          echo "Latest commits:" >> README.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
          echo "Repo 1: $REPO_COMMITS" >> README.md
-      - name: Update .md File
-        run: |
-         echo -e "\n Latest commits\n" >> README.md
-         echo "Repo 1" >> README.md
-         echo "$REPO_COMMITS" >> README.md
+      # - name: Update .md File
+      #   run: |
+      #    echo -e "\n Latest commits\n" >> README.md
+      #    echo "Repo 1" >> README.md
+      #    echo "$REPO_COMMITS" >> README.md
 
       - name: Update .md File  
         run: |
