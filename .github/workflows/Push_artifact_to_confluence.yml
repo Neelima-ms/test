@@ -19,7 +19,7 @@ jobs:
         run: |
          echo -e "\n Latest commits\n" >> README.md
          echo "Repo 1" >> README.md
-         echo $REPO_COMMITS" >> README.md
+         echo "$REPO_COMMITS" >> README.md
 
       - name: Update .md File  
         run: |
