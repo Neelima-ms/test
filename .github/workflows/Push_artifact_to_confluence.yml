@@ -11,21 +11,21 @@ jobs:
 
       - name: get commits 
         run: |
-         echo "Latest commits:" >> README.md
+         echo "Latest commits:" >> commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
-         echo "Repo 1: $REPO_COMMITS" >> README.md
+         echo "Repo 1: $REPO_COMMITS" >> commits.md
 
       - name: Update .md File  
         run: |
              git config --global user.email "neelimamaddela95@gmail.com"
              git config --global user.name "Neelima"
-             git add README.md
+             git add commits.md
              git commit -m "update commits.md with latest commit"
              git push origin main
 
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
-          from: './README.md'
+          from: './commits.md'
           to: '1867778' # The confluence page id where to write the output
           cloud: neelimasudhakar
           user: neelimasudhakar95@gmail.com
