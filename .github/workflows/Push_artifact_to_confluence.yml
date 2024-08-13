@@ -11,9 +11,9 @@ jobs:
 
       - name: get commits 
         run: |
-         echo "\nLatest commits:" >> ./docs/commits.md
+         echo "Latest commits:" >> ./docs/commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
-         echo "\nRepo 1: $REPO_COMMITS" >> ./docs/commits.md
+         echo "Repo 1: $REPO_COMMITS" >> ./docs/commits.md
 
       - name: Update .md File  
         run: |
