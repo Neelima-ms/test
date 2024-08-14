@@ -13,13 +13,15 @@ jobs:
         run: |
          echo "TAG: $(date +'%m_%d')" >> ./docs/commits.md
 
+      - run: echo "$TAG"
 
       - name: get commits 
         run: |
          echo "Latest commits:" >> ./docs/commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
          echo "Commits: $REPO_COMMITS" >> ./docs/commits.md
-  
+         
+      - run: echo "REPO_COMMITS"
      
       - name: Test
         id: run_test
@@ -45,14 +47,14 @@ jobs:
           echo "status: ${{ env.STASTUS }}" >> ./docs/commits.md
 
 
-      - name: Update .md File
-        if: always ()
-        run: |
-             git config --global user.email "neelimamaddela95@gmail.com"
-             git config --global user.name "Neelima"
-             git add ./docs/commits.md
-             git commit -m "update commits.md with latest commit and Tag"
-             git push 
+      # - name: Update .md File
+      #   if: always ()
+      #   run: |
+      #        git config --global user.email "neelimamaddela95@gmail.com"
+      #        git config --global user.name "Neelima"
+      #        git add ./docs/commits.md
+      #        git commit -m "update commits.md with latest commit and Tag"
+      #        git push 
 
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
