@@ -12,7 +12,7 @@ jobs:
       - name: save tag  
         run: |
           TAG=(date +'%m_%d') 
-          echo "TAG: $TAG >> ./docs/commits.md
+          echo "TAG: $TAG" >> ./docs/commits.md
 
       - run: echo "$TAG"
 
