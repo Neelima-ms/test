@@ -11,8 +11,8 @@ jobs:
 
       - name: save tag  
         run: |
-          TAG=14-08 >> $GITHUB_ENV
-          echo "TAG: $TAG" >> ./docs/commits.md
+          echo "TAG=14-08" >> $GITHUB_ENV
+          echo "TAG: ${{ env.TAG }}" >> ./docs/commits.md
 
       - run: echo "The Tag is:${{ env.TAG }}"
 
