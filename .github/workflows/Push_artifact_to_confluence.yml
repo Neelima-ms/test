@@ -45,13 +45,13 @@ jobs:
           echo "status: ${{ env.STASTUS }}" >> ./docs/commits.md
 
 
-      # - name: Update .md File  
-      #   run: |
-      #        git config --global user.email "neelimamaddela95@gmail.com"
-      #        git config --global user.name "Neelima"
-      #        git add ./docs/commits.md
-      #        git commit -m "update commits.md with latest commit"
-      #        git push origin main
+      - name: Update .md File  
+        run: |
+             git config --global user.email "neelimamaddela95@gmail.com"
+             git config --global user.name "Neelima"
+             git add ./docs/commits.md
+             git commit -m "update commits.md with latest commit"
+             git push origin main
 
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
