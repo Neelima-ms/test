@@ -4,16 +4,44 @@ on:
 
 jobs:
   Push-artifact:
-   runs-on: ubuntu-22.04
+   runs-on: ubuntu-latest
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
 
+      - name: save tag  
+        if: ${{ success() }}
+        run: echo "TAG:$(date +'%m_%d')" > ./docs/commits.md
+
       - name: get commits 
         run: |
          echo "Latest commits:" >> ./docs/commits.md
-         REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
-         echo "Repo 1: $REPO_COMMITS" >> ./docs/commits.md
+         REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) >> ./docs/commits.md
+  
+     
+      - name: Test
+        id: run_test
+        run: |
+         echo "test" 
+         exit 0
+      
+      - name: Determine step Status
+        if: always()
+        id: checkStatus
+        run: |
+          if [ "${{ steps.run_test.output }}" == 'success' ]; then
+           echo "STASTUS=Pass" >> $GITHUB_ENV
+          else
+           echo "STASTUS=FAIL" >> $GITHUB_ENV
+          fi
+        shell: bash
+        
+      - name: Upload Test Results
+        if: always()
+        run: |
+          echo "Test Result" > ./docs/commits.md
+          echo "status: ${{ env.STASTUS }} > ./docs/commits.md
+
 
       - name: Update .md File  
         run: |
