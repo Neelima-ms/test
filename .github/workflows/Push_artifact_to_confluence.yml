@@ -40,7 +40,7 @@ jobs:
         if: always()
         run: |
           echo "Test Result" > ./docs/commits.md
-          echo "status: ${{ env.STASTUS }} > ./docs/commits.md
+          echo "status: ${{ env.STASTUS }}" >> ./docs/commits.md
 
 
       - name: Update .md File  
