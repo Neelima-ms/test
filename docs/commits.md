@@ -1,6 +1,4 @@
-TAG:
- 14-08
-Test Result:
- status: FAIL
+Test Result
+status: FAIL
 Latest commits:
- Update Push_artifact_to_confluence.yml
+Commits: Update Push_artifact_to_confluence.yml
