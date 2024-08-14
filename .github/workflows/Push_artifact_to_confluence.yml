@@ -11,7 +11,7 @@ jobs:
 
       - name: save tag  
         run: |
-          echo "TAG=14-08" >> $GITHUB_ENV
+          echo "TAG=$(date +'%m_%d')" >> $GITHUB_ENV
           echo "TAG: ${{ env.TAG }}" >> ./docs/commits.md
 
       - run: echo "The Tag is:${{ env.TAG }}"
@@ -48,14 +48,14 @@ jobs:
           echo "status: ${{ env.STASTUS }}" >> ./docs/commits.md
 
 
-      # - name: Update .md File
-      #   if: always ()
-      #   run: |
-      #        git config --global user.email "neelimamaddela95@gmail.com"
-      #        git config --global user.name "Neelima"
-      #        git add ./docs/commits.md
-      #        git commit -m "update commits.md with latest commit and Tag"
-      #        git push 
+      - name: Update .md File
+        if: always ()
+        run: |
+             git config --global user.email "neelimamaddela95@gmail.com"
+             git config --global user.name "Neelima"
+             git add ./docs/commits.md
+             git commit -m "update commits.md with latest commit and Tag"
+             git push 
 
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
