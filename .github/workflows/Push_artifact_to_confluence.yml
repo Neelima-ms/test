@@ -8,12 +8,42 @@ jobs:
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
+        
+      - name : Tag
+        run: |
+          echo "TAG=$(date +'%m_%d')" >> $GITHUB_ENV
+          echo "TAG: ${{ env.TAG }}" >> ./docs/commits.md
+
+      - run: echo "The Tag is:${{ env.TAG }}"
+
+      - name: Test
+        id: run_test
+        run: |
+         echo "test" 
+         exit 0
+      
+      - name: Determine step Status
+        if: always()
+        id: checkStatus
+        run: |
+          if [ "${{ steps.run_test.output }}" == 'success' ]; then
+           echo "STASTUS=Pass" >> $GITHUB_ENV
+          else
+           echo "STASTUS=FAIL" >> $GITHUB_ENV
+          fi
+        shell: bash
+        
+      - name: Upload Test Results
+        if: always()
+        run: |
+          echo "Test Result" > ./docs/commits.md
+          echo "status: ${{ env.STASTUS }}" >> ./docs/commits.md
 
       - name: get commits 
         run: |
          echo "Latest commits:" >> ./docs/commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
-         echo "Repo 1: $REPO_COMMITS" >> ./docs/commits.md
+         echo "Commits: $REPO_COMMITS" >> ./docs/commits.md
       - name: Update .md File  
         run: |
              git config --global user.email "neelimamaddela95@gmail.com"
