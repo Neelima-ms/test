@@ -11,7 +11,8 @@ jobs:
 
       - name: save tag  
         run: |
-         echo "TAG:14-08" >> ./docs/commits.md
+          TAG=(date +'%m_%d') 
+          echo "TAG: $TAG >> ./docs/commits.md
 
       - run: echo "$TAG"
 
