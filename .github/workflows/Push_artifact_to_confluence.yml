@@ -10,16 +10,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: save tag  
-        if: ${{ success() }}
         run: |
-         echo "TAG: $(date +'%m_%d')" > ./docs/commits.md
+         echo "TAG: $(date +'%m_%d')" >> ./docs/commits.md
 
 
       - name: get commits 
         run: |
-         echo "Latest commits:" > ./docs/commits.md
+         echo "Latest commits:" >> ./docs/commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
-         echo "$REPO_COMMITS" > ./docs/commits.md
+         echo "Commits: $REPO_COMMITS" >> ./docs/commits.md
   
      
       - name: Test
