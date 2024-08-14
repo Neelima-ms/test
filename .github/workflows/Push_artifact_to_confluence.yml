@@ -4,59 +4,23 @@ on:
 
 jobs:
   Push-artifact:
-   runs-on: ubuntu-latest
+   runs-on: ubuntu-22.04
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
-
-      - name: save tag  
-        run: |
-          echo "TAG=$(date +'%m_%d')" >> $GITHUB_ENV
-          echo "TAG: ${{ env.TAG }}" >> ./docs/commits.md
-
-      - run: echo "The Tag is:${{ env.TAG }}"
 
       - name: get commits 
         run: |
          echo "Latest commits:" >> ./docs/commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
-         echo "Commits: $REPO_COMMITS" >> ./docs/commits.md
-         
-      - run: echo "REPO_COMMITS"
-     
-      - name: Test
-        id: run_test
-        run: |
-         echo "test" 
-         exit 0
-      
-      - name: Determine step Status
-        if: always()
-        id: checkStatus
-        run: |
-          if [ "${{ steps.run_test.output }}" == 'success' ]; then
-           echo "STASTUS=Pass" >> $GITHUB_ENV
-          else
-           echo "STASTUS=FAIL" >> $GITHUB_ENV
-          fi
-        shell: bash
-        
-      - name: Upload Test Results
-        if: always()
-        run: |
-          echo "Test Result" > ./docs/commits.md
-          echo "status: ${{ env.STASTUS }}" >> ./docs/commits.md
-
-
-      - name: Update .md File
-        if: always ()
+         echo "Repo 1: $REPO_COMMITS" >> ./docs/commits.md
+      - name: Update .md File  
         run: |
              git config --global user.email "neelimamaddela95@gmail.com"
              git config --global user.name "Neelima"
              git add ./docs/commits.md
-             git commit -m "update commits.md with latest commit and Tag"
-             git push 
-
+             git commit -m "update commits.md with latest commit"
+             git push origin main
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
           from: './docs/commits.md'
@@ -64,16 +28,3 @@ jobs:
           cloud: neelimasudhakar
           user: neelimasudhakar95@gmail.com
           token: ${{ secrets.AUTH_API_TOKEN }}
-
-
-      # - name: Publish Markdown to Confluence
-      #   uses: TTengs/MarkdownToConfluence@v3
-      #   with:
-      #     fileslocation: './docs'
-      #     should_upload: true
-      #     confluence_url: 'https://neelimasudhakar.atlassian.net/wiki'
-      #     confluence_space_key: '~7120200b04a4666ade43ecb8ed95abf53dd3a4'
-      #     auth_username: NeelimaMaddela
-      #     auth_api_token: ${{ secrets.AUTH_API_TOKEN }}
-      #     is_preview: false
-   
