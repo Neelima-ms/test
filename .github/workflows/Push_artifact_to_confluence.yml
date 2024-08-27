@@ -44,6 +44,13 @@ jobs:
          echo "Latest commits:" >> ./docs/commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
          echo "Commits: $REPO_COMMITS" >> ./docs/commits.md
+
+      - name: save
+        run: |
+          echo "# **evironment-8-27-Pass**" >> ./docs/commits.md
+          echo "## Tag" >> ./docs/commits.md
+          echo "### The TAG used for deployment: evironment-8-27-Pass" >> ./docs/commits.md
+          echo "## Jira Items" >> ./docs/commits.md
       - name: Update .md File  
         run: |
              git config --global user.email "neelimamaddela95@gmail.com"
