@@ -47,7 +47,7 @@ jobs:
 
       - name: save
         run: |
-          echo "# **evironment-8-27-Pass**" >> ./docs/commits.md
+          echo "**evironment-8-27-Pass**" >> ./docs/commits.md
           echo "## Tag" >> ./docs/commits.md
           echo "The TAG used for deployment: evironment-8-27-Pass" >> ./docs/commits.md
           echo "## Jira Items" >> ./docs/commits.md
