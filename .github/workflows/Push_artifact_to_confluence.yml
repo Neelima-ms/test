@@ -47,10 +47,15 @@ jobs:
 
       - name: save
         run: |
-          echo "**evironment-8-27-Pass**" >> ./docs/commits.md
+          echo "# **evironment-8-27-Pass**" >> ./docs/commits.md
           echo "## Tag" >> ./docs/commits.md
-          echo "The TAG used for deployment: evironment-8-27-Pass" >> ./docs/commits.md
+          echo " The TAG used for deployment: evironment-8-27-Pass" >> ./docs/commits.md
           echo "## Jira Items" >> ./docs/commits.md
+          echo "###  Repo commit"s >> ./docs/commits.md
+          git log --format=%B --since='yesterday' | sort | uniq | while read line; do
+             echo "- $line" >> ./docs/commits.md
+          done
+          
       - name: Update .md File  
         run: |
              git config --global user.email "neelimamaddela95@gmail.com"
