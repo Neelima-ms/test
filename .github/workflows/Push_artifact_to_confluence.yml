@@ -47,7 +47,7 @@ jobs:
 
       - name: save tag for QA Reference 
         if: ${{ success() }}
-        run: echo "$(date +'%m_%d') > Tag.txt
+        run: echo "$(date +'%m_%d')" > Tag.txt
             
       - name: TAG 
         uses: actions/upload-artifact@v4.3.3 
