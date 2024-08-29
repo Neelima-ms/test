@@ -108,7 +108,45 @@ jobs:
             -X POST \
             -H "X-Atlassian-Token: nocheck" \
             -F "file=@Tag.zip" \
-            "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778/child/attachment"   
+            "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778/child/attachment"  
+
+      - name: Get Page Content
+        id: get_page_content
+        run: |
+          response=$(curl -u ${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }} \
+            -X GET \
+            "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778?expand=body.storage")
+          echo "::set-output name=content::$response"
+          echo "::set-output name=version_number::$(echo "$response" | jq -r '.version.number')"
+ 
+      - name: Update Page with Attachment Link
+        run: |
+          version_number=${{ steps.get_page_content.outputs.version_number }}
+          new_version=$((version_number + 1))
+          content_url="https://neelimasudhakar.atlassian.net/wiki/download/attachments/1867778/Tag.zip?api=v2"
+          updated_content=$(cat <<EOF
+          {
+            "id": "1867778",
+            "type": "page",
+            "title": "Back-end 24.03",
+            "body": {
+              "storage": {
+                "value": "</p>Back-end 24.03</p><p>N<p><p>ch by title</p><p.Owned by NeelimaMaddela</p><p>Last updated: 3 minutes ago 1 min read 1 person viewed</p><p>Getting started in</p><p>-07-24 M</p><p>DRAFT</p><p>Test Result</p><p>ntitled whiteboard</p><p>ses</p><p>status: FAIL</p><p>My Deployments</p><p>4.03</p><p>Latest commits.md</p><p><a herf=\"$content_url\">Download Tag.zip</a></p>",
+                "representation": "storage"
+              }
+            },
+
+            "version": {
+              "number": $new_version
+            }
+          }
+          EOF
+          )
+                   curl -u ${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }} \
+                    -X PUT \
+                    -H "Content-Type: application/json" \
+                    -d "$updated_content" \
+                    "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778"
             
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
