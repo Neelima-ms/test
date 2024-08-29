@@ -99,7 +99,7 @@ jobs:
         run: |
           arifact_id="${{ env.ARTIFACT_ID }}"
           curl -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN_CICD }}" \
-          -L -o artifact.zip \
+          -L -o Tag.zip \
           "https://github.com/${{ github.repository }}/actions/artifacts/${arifact_id}/zip"
 
       - name: Upload Artifact to Confluence
@@ -107,7 +107,7 @@ jobs:
           curl -u neelimasudhakar95@gmail.com:${{ secrets.AUTH_API_TOKEN }} \
             -X POST \
             -H "X-Atlassian-Token: nocheck" \
-            -F "file=@artifact.zip" \
+            -F "file=@Tag.zip" \
             "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778/attachment"   
             
       - uses: cupcakearmy/confluence-markdown-sync@v1
