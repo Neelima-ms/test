@@ -1,12 +1,10 @@
 Test Result
 status: FAIL
 Latest commits:
-Commits: Update Push_artifact_to_confluence.yml
+Commits: Update commits.md
 # **evironment-8-27-Pass**
 ## Tag
  The TAG used for deployment: evironment-8-27-Pass
 ## Jira Items
 ###  Repo commits
-- Update Push_artifact_to_confluence.yml
-
-test
+- Update commits.md
