@@ -73,6 +73,43 @@ jobs:
         with:
             name: Tag
             path: Tag.txt  
+
+      - name: Get Artifact URL
+        run: |
+          artifact_name="Tag"
+          
+          artifact_list=$(curl -s -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts")
+
+          artifact_id=$(echo "$artifact_list" | jq -r --arg artifact_name "$artifact_name" \
+          '.artifacts[] | select(.name == $artifact_name ) | .id')
+                  
+          echo "Artifact ID: $artifact_id"
+          echo "ARTIFACT_ID=$artifact_id" >> $GITHUB_ENV
+
+      # - name: Artifact Url
+      #   run: |
+      #    arifact_id="${{ env.ARTIFACT_ID }}"
+      #    artifact_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${arifact_id}"
+
+      #     echo "Artifact Url: $artifact_url"
+      #     echo "ARTIFACT_URL=$artifact_url" >> $GITHUB_ENV
+
+      - name: Download Artifact
+        run: |
+          arifact_id="${{ env.ARTIFACT_ID }}"
+          curl -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN_CICD }}" \
+          -L -o artifact.zip \
+          "https://github.com/${{ github.repository }}/actions/artifacts/${arifact_id}/zip"
+
+      - name: Upload Artifact to Confluence
+        run: |
+          curl -u neelimasudhakar95@gmail.com:${{ secrets.AUTH_API_TOKEN }} \
+            -X POST \
+            -H "X-Atlassian-Token: nocheck" \
+            -F "file=@artifact.zip" \
+            "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/{PAGE_ID}/1867778/attachment"   
+            
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
           from: './docs/commits.md'
