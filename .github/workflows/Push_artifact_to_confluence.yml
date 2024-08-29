@@ -108,7 +108,7 @@ jobs:
             -X POST \
             -H "X-Atlassian-Token: nocheck" \
             -F "file=@Tag.zip" \
-            "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778/attachment"   
+            "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778/child/attachment"   
             
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
