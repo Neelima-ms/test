@@ -19,7 +19,7 @@ jobs:
       - name: Test
         id: run_test
         run: |
-         echo "test" 
+         echo "test" >> ./docs/commits.md
          exit 0
       
       - name: Determine step Status
