@@ -43,17 +43,7 @@ jobs:
         run: |
          echo "Latest commits:" >> ./docs/commits.md
          REPO_COMMITS=$(git log --format=%B --since='yesterday' | sort | uniq) 
-         echo "Commits: $REPO_COMMITS" >> ./docs/commits.md
-
-      - name: save tag for QA Reference 
-        if: ${{ success() }}
-        run: echo "$(date +'%m_%d')" > Tag.txt
-            
-      - name: TAG 
-        uses: actions/upload-artifact@v4.3.3 
-        with:
-            name: Tag
-            path: Tag.txt   
+         echo "Commits: $REPO_COMMITS" >> ./docs/commits.md 
 
       - name: save
         run: |
@@ -73,6 +63,16 @@ jobs:
              git add ./docs/commits.md
              git commit -m "update commits.md with latest commit"
              git push origin main
+
+      - name: save tag for QA Reference 
+        if: ${{ success() }}
+        run: echo "$(date +'%m_%d')" > Tag.txt
+            
+      - name: TAG 
+        uses: actions/upload-artifact@v4.3.3 
+        with:
+            name: Tag
+            path: Tag.txt  
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
           from: './docs/commits.md'
