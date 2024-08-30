@@ -132,7 +132,7 @@ jobs:
             NEW_VERSION=$((VERSION_NUMBER + 1))
        
             # Update the page with the attachment link
-            UPDATED_CONTENT=$(echo "$REST_CONTENT_FULL_OUTPUT" | jq --arg ATTACHMENT_FILE_NAME       "${ATTACHMENT_FILE_NAME}" \
+            UPDATED_CONTENT=$(echo "$REST_CONTENT_FULL_OUTPUT" | jq --arg ATTACHMENT_FILE_NAME "${ATTACHMENT_FILE_NAME}" \
               '.body.storage.value += "<p><a href=\"/wiki/download/attachments/'${CONFLUENCE_PAGE_ID}'/\($ATTACHMENT_FILE_NAME)\">Download ZIP File: \($ATTACHMENT_FILE_NAME)</a></p>" | {body: {storage: {value: .body.storage.value, representation: .body.storage.representation}}, id: .id, type: .type, title: .title, space: {key: .space.key}, version: {number: '$NEW_VERSION'}}')
        
             # Save the updated content to a temporary file
