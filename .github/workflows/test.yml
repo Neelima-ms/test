@@ -14,7 +14,7 @@ jobs:
           $VERSION_NAME=v.24.04
           $BUILD_NUMBER=123
           # $PREVIOUS_BUILDNUMBER=$(( BUILD-NUMBER -1))
-          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v$VERSION_NAME.$BUILD_NUMBER 
+          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v$VERSION_NAME.$BUILD_NUMBER" 
          
           
       # - name: Print 
