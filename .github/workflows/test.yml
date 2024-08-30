@@ -57,8 +57,9 @@ jobs:
         run: |
           $BUILD_NUMBER = $env:BUILD_NUMBER 
           $PREVIOUS_BUILDNUMBER = $($BUILD_NUMBER -1)
-          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v.$VERSION_NAME.$PREVIOUS_BUILDNUMBER" 
-         
+          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v.$VERSION_NAME.$PREVIOUS_BUILDNUMBER"
+          Write-output $PREVIOUS_TAG
+          "PREVIOUS_TAG=$PREVIOUS_TAG" >> $env:GITHUB_ENV
           
       # - name: Print 
       #   run: |
@@ -67,9 +68,12 @@ jobs:
       - name: Get current Tag
         run: |
          $CURRENT_TAG = git describe --tags --abbrev=0 
+         Write-output "$CURRENT_TAG"
+         echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $env:GITHUB_ENV
          
+        
       - name: Change log
         run: |
-         git log --pretty=format:"%h %s" $PREVIOUS_TAG..$CURRENT_TAG
+         git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.$CURRENT_TAG }}
          
          
