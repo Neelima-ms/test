@@ -74,6 +74,6 @@ jobs:
         
       - name: Change log
         run: |
-         git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.$CURRENT_TAG }}
+         git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }}
          
          
