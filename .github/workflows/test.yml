@@ -24,7 +24,6 @@ jobs:
           "VERSION_NAME=$VERSION_NAME" >> $env:GITHUB_ENV
         
       - name: Create tag
-        if: ${{ !contains(github.ref, 'task/') &&  !inputs.TestingBuild }}
         uses: actions/github-script@v6
         with:
           script: |
