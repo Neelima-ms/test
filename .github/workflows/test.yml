@@ -70,6 +70,6 @@ jobs:
          
       - name: Change log
         run: |
-         git log --pretty=format:"%h %s" $PREVIOUS_TAG ..$Current_tag
+         git log --pretty=format:"%h %s" $PREVIOUS_TAG..$Current_tag
          
          
