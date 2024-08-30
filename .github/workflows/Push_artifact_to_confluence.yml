@@ -71,12 +71,12 @@ jobs:
       - name: Upload TAG 
         uses: actions/upload-artifact@v4.3.3 
         with:
-            name: Tag2
+            name: Tag3
             path: Tag.txt  
 
       - name: Get Artifact URL
         run: |
-          artifact_name="Tag2"
+          artifact_name="Tag3"
           
           artifact_list=$(curl -s -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN }}" \
           "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts")
@@ -99,61 +99,64 @@ jobs:
         run: |
           arifact_id="${{ env.ARTIFACT_ID }}"
           curl -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN_CICD }}" \
-          -L -o Tag2.zip \
+          -L -o Tag3.zip \
           "https://github.com/${{ github.repository }}/actions/artifacts/${arifact_id}/zip"
 
-          
       - name: Upload Artifact to Confluence
         run: |
-          ATTACHMENT_FILE_NAME="Tag2.zip"
+          ATTACHMENT_FILE_NAME="Tag3.zip"
           CONFLUENCE_PAGE_ID="1867778"
           CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
           AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
           USER_NAME="neelimasudhakar95@gmail.com"
-           
+       
           # Upload the attachment
-           ATTACHMENT_TITLE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-           -X POST \
-           -H "X-Atlassian-Token: nocheck" \
-           -F "file=@${ATTACHMENT_FILE_NAME}" \
-           -F "comment=File attached via GitHub Actions" \
-           "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment" 2>/dev/null \
-            | jq -r '.results[].title')
-           
-           # Check if the attachment was uploaded successfully
-           if [ "${ATTACHMENT_TITLE}" = "${ATTACHMENT_FILE_NAME}" ]; then
-             echo "File ${ATTACHMENT_TITLE} uploaded to page ${CONFLUENCE_PAGE_ID}"
-           
-             MACRO_UUID=$(uuidgen 2>/dev/null)
-           
-             # Get the page content and metadata
-              REST_CONTENT_FULL_OUTPUT=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-                "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}?expand=body.storage,version,space" 2>/dev/null)
-           
-              # Update the page with the attachment link
-              echo ${REST_CONTENT_FULL_OUTPUT} | \
-              jq '{body: {storage: {value: (.body.storage.value + "<p><a href=\"/wiki/download/attachments/'${CONFLUENCE_PAGE_ID}'/'${ATTACHMENT_FILE_NAME}'\">Download ZIP File</a></p>"), representation: .body.storage.representation}}, id: .id, type: .type, title: .title, space: {key: .space.key}, version: {number: (.version.number + 1)}}' \
-              > modified-page-data.json
-           
-              # Update the Confluence page with the modified content
-              MODIFIED_PAGE_ID=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-                -X PUT \
-                -H 'Content-Type: application/json' \
-                --data @modified-page-data.json \
-                "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}" 2>/dev/null \
-                | jq -r '.id')
-           
-              # Verify if the page update was successful
-              if [ "${MODIFIED_PAGE_ID}" = "${CONFLUENCE_PAGE_ID}" ]; then
-                echo "Page ${CONFLUENCE_PAGE_ID} successfully updated."
-              else
-                echo "Failed to update page ${CONFLUENCE_PAGE_ID}."
-              fi
+          ATTACHMENT_TITLE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+          -X POST \
+          -H "X-Atlassian-Token: nocheck" \
+          -F "file=@${ATTACHMENT_FILE_NAME}" \
+          -F "comment=File attached via GitHub Actions" \
+          "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment" 2>/dev/null \
+          | jq -r '.results[].title')
+       
+          # Check if the attachment was uploaded successfully
+          if [ "${ATTACHMENT_TITLE}" = "${ATTACHMENT_FILE_NAME}" ]; then
+            echo "File ${ATTACHMENT_TITLE} uploaded to page ${CONFLUENCE_PAGE_ID}"
+       
+            # Get the page content and metadata
+            REST_CONTENT_FULL_OUTPUT=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+            "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}?expand=body.storage,version,space" 2>/dev/null)
+       
+            # Extract the current version number
+            VERSION_NUMBER=$(echo "$REST_CONTENT_FULL_OUTPUT" | jq -r '.version.number')
+            NEW_VERSION=$((VERSION_NUMBER + 1))
+       
+            # Update the page with the attachment link
+            UPDATED_CONTENT=$(echo "$REST_CONTENT_FULL_OUTPUT" | jq --arg ATTACHMENT_FILE_NAME       "${ATTACHMENT_FILE_NAME}" \
+              '.body.storage.value += "<p><a href=\"/wiki/download/attachments/'${CONFLUENCE_PAGE_ID}'/\($ATTACHMENT_FILE_NAME)\">Download ZIP File: \($ATTACHMENT_FILE_NAME)</a></p>" | {body: {storage: {value: .body.storage.value, representation: .body.storage.representation}}, id: .id, type: .type, title: .title, space: {key: .space.key}, version: {number: '$NEW_VERSION'}}')
+       
+            # Save the updated content to a temporary file
+            echo "$UPDATED_CONTENT" > modified-page-data.json
+       
+            # Update the Confluence page with the modified content
+            MODIFIED_PAGE_ID=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+            -X PUT \
+            -H 'Content-Type: application/json' \
+            --data @modified-page-data.json \
+            "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}" 2>/dev/null \
+            | jq -r '.id')
+       
+            # Verify if the page update was successful
+            if [ "${MODIFIED_PAGE_ID}" = "${CONFLUENCE_PAGE_ID}" ]; then
+              echo "Page ${CONFLUENCE_PAGE_ID} successfully updated."
             else
-                echo "Failed to upload file to page ${CONFLUENCE_PAGE_ID}"
+              echo "Failed to update page ${CONFLUENCE_PAGE_ID}."
             fi
-            
- 
+          else
+            echo "Failed to upload file to page ${CONFLUENCE_PAGE_ID}"
+          fi
+       
+       
 
       # - name: Get Page Content
       #   id: get_page_content
