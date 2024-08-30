@@ -68,9 +68,11 @@ jobs:
       - name: Get current Tag
         run: |
          $TAG_PATTERN = "v.$env:VERSION_NAME.$env:BUILD_NUMBER"
+         Write-Output "All Tags: $TAG_PATTERN "
          $TAGS = git tag --list "v.*"
          Write-Output "All Tags: $TAGS"
          $CURRENT_TAG = $TAGS | Where-Object { $_ -like $TAG_PATTERN } | Sort-Object -Descending | Select-Object -First 1
+         
          Write-output "Current tag: $CURRENT_TAG"
          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $env:GITHUB_ENV
          
