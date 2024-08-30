@@ -64,7 +64,7 @@ jobs:
           
       - name: Get current Tag
         run: |
-         $CURRENT_TAG = git describe --tags --abbrev=0
+         $CURRENT_TAG = git describe --tags --abbrev=0 $(git rev-parse HEAD)
          
       - name: Change log
         run: |
