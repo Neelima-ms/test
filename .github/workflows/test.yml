@@ -8,13 +8,55 @@ jobs:
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
+      - name: Generate build number
+        uses: onyxmueller/build-tag-number@v1
+        with:
+         token: ${{secrets.github_token}} 
 
+      - name: Manual QA
+        run: |
+            echo "Manual QA build"
+            echo "BUILD_NUMBER=${{ env.BUILD_NUMBER }}" >> $env:GITHUB_ENV
+
+      - name: Version Name
+        run: |
+          $VERSION_NAME="V.24.04.001"
+          "VERSION_NAME=$VERSION_NAME" >> $env:GITHUB_ENV
+        
+      - name: Create tag
+        if: ${{ !contains(github.ref, 'task/') &&  !inputs.TestingBuild }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const refName = 'tags/v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}'
+            const tagListData = await github.rest.git.listMatchingRefs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: refName
+            })
+            const tagList = tagListData.data
+            console.log(tagList)
+            if (tagList.length > 0)
+            {
+              console.log("Tag already exists.")
+              return
+            }
+            else
+            {
+              console.log("Creating a new tag.")
+              github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/' + refName,
+                sha: context.sha
+              })
+            }
+            
       - name: Get Previous Tag
         run: |
-          $VERSION_NAME="v.24.04"
-          $BUILD_NUMBER=123
-          # $PREVIOUS_BUILDNUMBER=$(( BUILD-NUMBER -1))
-          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v$VERSION_NAME.$BUILD_NUMBER" 
+          $BUILD_NUMBER=${{ env.BUILD_NUMBER }} 
+          $PREVIOUS_BUILDNUMBER=$(( BUILD-NUMBER -1))
+          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v$VERSION_NAME.$PREVIOUS_BUILDNUMBER" 
          
           
       # - name: Print 
@@ -23,7 +65,7 @@ jobs:
           
       - name: Get current Tag
         run: |
-         $Current_tag = git describe --tags --abbrev=0
+         $CURRENT_TAG = git describe --tags --abbrev=0 "v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}"
          
       - name: Change log
         run: |
