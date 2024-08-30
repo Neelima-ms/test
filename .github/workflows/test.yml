@@ -23,7 +23,7 @@ jobs:
           
       - name: Get current Tag
         run: |
-         Current_tag=$(git describe --tags --abbrev=0)
+         $Current_tag = git describe --tags --abbrev=0
          
       - name: Change log
         run: |
