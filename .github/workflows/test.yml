@@ -20,14 +20,14 @@ jobs:
 
       - name: Version Name
         run: |
-          $VERSION_NAME="V.24.04.001"
+          $VERSION_NAME="24.04.001"
           "VERSION_NAME=$VERSION_NAME" >> $env:GITHUB_ENV
         
       - name: Create tag
         uses: actions/github-script@v6
         with:
           script: |
-            const refName = 'tags/v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}'
+            const refName = 'tags/v.${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}'
             const tagListData = await github.rest.git.listMatchingRefs({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -55,7 +55,7 @@ jobs:
         run: |
           $BUILD_NUMBER = $env:BUILD_NUMBER 
           $PREVIOUS_BUILDNUMBER = $($BUILD_NUMBER -1)
-          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v$VERSION_NAME.$PREVIOUS_BUILDNUMBER" 
+          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v.$VERSION_NAME.$PREVIOUS_BUILDNUMBER" 
          
           
       # - name: Print 
