@@ -76,7 +76,7 @@ jobs:
 
       - name: Get Artifact URL
         run: |
-          artifact_name="Tag"
+          artifact_name="Tag1"
           
           artifact_list=$(curl -s -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN }}" \
           "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts")
