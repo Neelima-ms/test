@@ -1,0 +1,27 @@
+name: Android
+on:
+  workflow_dispatch: {}
+
+jobs:
+  Push-artifact:
+   runs-on: windows-latest
+   steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4
+
+      - name: Get Previous Tag
+        run: |
+          $VERSION_NAME=v.24.04
+          $BUILD-NUMBER=123
+          $PREVIOUS_BUILDNUMBER=$(( BUILD-NUMBER -1))
+          $PREVIOUS_TAG = git tag --sort=-v:refname --list "v$VERSION_NAME.$PREVIOUS_BUILDNUMBER 
+         
+          
+      # - name: Print 
+      #   run: |
+      #     echo "Prev Tag: ${{ env.Previous_Tag }}"
+          
+      - name: Get current Tag
+        run: |
+         Current_tag=$(git describe --tags --abbrev=0 --match "v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}") >> $env:GITHUB_ENV
+         
