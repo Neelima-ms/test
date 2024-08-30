@@ -8,6 +8,8 @@ jobs:
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Generate build number
         uses: onyxmueller/build-tag-number@v1
         with:
@@ -64,7 +66,7 @@ jobs:
           
       - name: Get current Tag
         run: |
-         $CURRENT_TAG = git describe --tags --abbrev=0 $(git rev-parse HEAD)
+         $CURRENT_TAG = git describe --tags --abbrev=0 
          
       - name: Change log
         run: |
