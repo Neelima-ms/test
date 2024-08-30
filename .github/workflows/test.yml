@@ -53,8 +53,8 @@ jobs:
             
       - name: Get Previous Tag
         run: |
-          $BUILD_NUMBER=${{ env.BUILD_NUMBER }} 
-          $PREVIOUS_BUILDNUMBER=$(( BUILD_NUMBER -1 ))
+          $BUILD_NUMBER = $env:BUILD_NUMBER 
+          $PREVIOUS_BUILDNUMBER = $($BUILD_NUMBER -1)
           $PREVIOUS_TAG = git tag --sort=-v:refname --list "v$VERSION_NAME.$PREVIOUS_BUILDNUMBER" 
          
           
