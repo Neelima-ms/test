@@ -68,13 +68,13 @@ jobs:
       #      sed 's/[0-9a-f]\{10\} //' changelog.txt >> ./Changelog.md
       #      cat ./Changelog.md
            
-      - name: Update .md File  
-        run: |
-             git config --global user.email "neelimamaddela95@gmail.com"
-             git config --global user.name "Neelima"
-             git add ./docs/commits.md
-             git commit -m "update commits.md with latest commit"
-             git push 
+      # - name: Update .md File  
+      #   run: |
+      #        git config --global user.email "neelimamaddela95@gmail.com"
+      #        git config --global user.name "Neelima"
+      #        git add ./docs/commits.md
+      #        git commit -m "update commits.md with latest commit"
+      #        git push 
 
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
