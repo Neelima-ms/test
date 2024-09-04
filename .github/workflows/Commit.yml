@@ -41,7 +41,7 @@ jobs:
       - name: Generate Changelog
         run: |
           if [ -n "$PREVIOUS_SHA" ]; then
-            git log "$PREVIOUS_SHA..$CURRENT_SHA" --pretty=format:"%h - %s" > changelog.txt
+            git log "$PREVIOUS_SHA..$CURRENT_SHA" --oneline > changelog.txt
             echo "Changelog generated:"
             cat changelog.txt
           else
