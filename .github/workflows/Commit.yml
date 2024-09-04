@@ -10,62 +10,50 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Get Previous Commit SHA
-        id: get_prev_sha
-        run: |
-          if [ -f "Prev_commit.txt" ]; then
-            PREVIOUS_SHA=$(cat Prev_commit.txt)
-            echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
-            echo "Previous Commit SHA: $PREVIOUS_SHA"
-          else
-            echo "No previous commit file found. Exiting."
-            exit 1
-          fi  
- 
-      - name: Get Current SHA
-        id: get_sha
+      - name: Get Current Commit SHA
+        id: get_current_sha
         run: |
           CURRENT_SHA=$(git rev-parse HEAD)
           echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
           echo "Current Commit SHA: $CURRENT_SHA"
-
-      - name: Generate Changelog
-        run: |
-            git log $PREVIOUS_SHA..$CURRENT_SHA --pretty=format:"%h - %s" > changelog.txt
-            echo "Changelog generated:"
-            cat changelog.txt    
  
-      - name: Save Current Commit
+      - name: Save Current Commit SHA
         run: |
           echo "$CURRENT_SHA" > Prev_commit.txt
-          echo "Prev_commit.txt updated with SHA: $CURRENT_SHA"
+          echo "Prev_commit.txt updated with current SHA: $CURRENT_SHA"
  
-      - name: Display File Contents
-        run: |
-          if [ -f "Prev_commit.txt" ]; then
-            cat Prev_commit.txt
-          else
-            echo "Prev_commit.txt does not exist."
-          fi
+      - name: Upload Prev_commit.txt as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: prev-commit
+          path: Prev_commit.txt
+          
+      # - name: Display File Contents
+      #   run: |
+      #     if [ -f "Prev_commit.txt" ]; then
+      #       cat Prev_commit.txt
+      #     else
+      #       echo "Prev_commit.txt does not exist."
+      #     fi
 
      
-      - name: Append Changelog to .md
-        run: |
-           sed 's/[0-9a-f]\{10\} //' changelog.txt >> ./Changelog.md
-           cat ./Changelog.md
+      # - name: Append Changelog to .md
+      #   run: |
+      #      sed 's/[0-9a-f]\{10\} //' changelog.txt >> ./Changelog.md
+      #      cat ./Changelog.md
            
-      - name: Update .md File  
-        run: |
-             git config --global user.email "neelimamaddela95@gmail.com"
-             git config --global user.name "Neelima"
-             git add ./docs/commits.md
-             git commit -m "update commits.md with latest commit"
-             git push origin main
+      # - name: Update .md File  
+      #   run: |
+      #        git config --global user.email "neelimamaddela95@gmail.com"
+      #        git config --global user.name "Neelima"
+      #        git add ./docs/commits.md
+      #        git commit -m "update commits.md with latest commit"
+      #        git push origin main
 
-      - uses: cupcakearmy/confluence-markdown-sync@v1
-        with:
-          from: './docs/commits.md'
-          to: '1867778' # The confluence page id where to write the output
-          cloud: neelimasudhakar
-          user: neelimasudhakar95@gmail.com
-          token: ${{ secrets.AUTH_API_TOKEN }}
+      # - uses: cupcakearmy/confluence-markdown-sync@v1
+      #   with:
+      #     from: './docs/commits.md'
+      #     to: '1867778' # The confluence page id where to write the output
+      #     cloud: neelimasudhakar
+      #     user: neelimasudhakar95@gmail.com
+      #     token: ${{ secrets.AUTH_API_TOKEN }}
