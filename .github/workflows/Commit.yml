@@ -10,12 +10,36 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Download Prev_commit.txt
+        uses: actions/download-artifact@v3
+        with:
+          name: prev-commit
+          
+      - name: Get Previous Commit SHA
+        id: get_prev_sha
+        run: |
+          if [ -f "Prev_commit.txt" ]; then
+            PREVIOUS_SHA=$(cat Prev_commit.txt)
+            echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
+            echo "Previous Commit SHA: $PREVIOUS_SHA"
+          else
+            echo "No previous commit file found. Exiting."
+            exit 1
+          fi
+ 
+
       - name: Get Current Commit SHA
         id: get_current_sha
         run: |
           CURRENT_SHA=$(git rev-parse HEAD)
           echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
           echo "Current Commit SHA: $CURRENT_SHA"
+
+      - name: Generate Changelog
+        run: |
+            git log "$PREVIOUS_SHA..$CURRENT_SHA" --pretty=format:"%h - %s" > changelog.txt
+            echo "Changelog generated:"
+            cat changelog.txt
  
       - name: Save Current Commit SHA
         run: |
