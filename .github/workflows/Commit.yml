@@ -10,49 +10,49 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Download artifact
-        id: download-artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          token: ${{ secrets.GIT_ACCESSTOKEN }}
-          run_number: 3
-          name: prev-commit
+      # - name: Download artifact
+      #   id: download-artifact
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with:
+      #     token: ${{ secrets.GIT_ACCESSTOKEN }}
+      #     run_number: 3
+      #     name: prev-commit
           
-      - name: Get Previous Commit SHA
-        id: get_prev_sha
-        run: |
-          if [ -f "Prev_commit.txt" ]; then
-            PREVIOUS_SHA=$(cat Prev_commit.txt)
-            echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
-            echo "Previous Commit SHA: $PREVIOUS_SHA"
-          else
-            echo "No previous commit file found. Exiting."
-            exit 1
-          fi
+      # - name: Get Previous Commit SHA
+      #   id: get_prev_sha
+      #   run: |
+      #     if [ -f "Prev_commit.txt" ]; then
+      #       PREVIOUS_SHA=$(cat Prev_commit.txt)
+      #       echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
+      #       echo "Previous Commit SHA: $PREVIOUS_SHA"
+      #     else
+      #       echo "No previous commit file found. Exiting."
+      #       exit 1
+      #     fi
  
 
-      - name: Get Current Commit SHA
-        id: get_current_sha
-        run: |
-          CURRENT_SHA=$(git rev-parse HEAD)
-          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
-          echo "Current Commit SHA: $CURRENT_SHA"
+      # - name: Get Current Commit SHA
+      #   id: get_current_sha
+      #   run: |
+      #     CURRENT_SHA=$(git rev-parse HEAD)
+      #     echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
+      #     echo "Current Commit SHA: $CURRENT_SHA"
 
       # - name: Generate Changelog
       #   run: |
       #       git log "$PREVIOUS_SHA"..HEAD  --oneline > changelog.txt
            
  
-      - name: Save Current Commit SHA
-        run: |
-          echo "$CURRENT_SHA" > Prev_commit.txt
-          echo "Prev_commit.txt updated with current SHA: $CURRENT_SHA"
+      # - name: Save Current Commit SHA
+      #   run: |
+      #     echo "$CURRENT_SHA" > Prev_commit.txt
+      #     echo "Prev_commit.txt updated with current SHA: $CURRENT_SHA"
  
-      - name: Upload Prev_commit.txt as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: prev-commit
-          path: Prev_commit.txt
+      # - name: Upload Prev_commit.txt as artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: prev-commit
+      #     path: Prev_commit.txt
           
       # - name: Display File Contents
       #   run: |
