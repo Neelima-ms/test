@@ -1,0 +1,31 @@
+name: Save and Display Commit SHA
+ 
+on:
+  workflow_dispatch: {}
+ 
+jobs:
+  save_and_display_sha:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+ 
+      - name: Get Current SHA
+        id: get_sha
+        run: |
+          CURRENT_SHA=$(git rev-parse HEAD)
+          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
+          echo "Current Commit SHA: $CURRENT_SHA"
+ 
+      - name: Save Current Commit
+        run: |
+          echo "$CURRENT_SHA" > Prev_commit.txt
+          echo "Prev_commit.txt updated with SHA: $CURRENT_SHA"
+ 
+      - name: Display File Contents
+        run: |
+          if [ -f "Prev_commit.txt" ]; then
+            cat Prev_commit.txt
+          else
+            echo "Prev_commit.txt does not exist."
+          fi
