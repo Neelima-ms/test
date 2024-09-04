@@ -74,7 +74,7 @@ jobs:
              git config --global user.name "Neelima"
              git add ./docs/commits.md
              git commit -m "update commits.md with latest commit"
-             git push origin main
+             git push 
 
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
