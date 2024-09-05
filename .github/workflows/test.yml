@@ -75,12 +75,14 @@ jobs:
       #     path: qa_tag.txt
 
       - name: Set BuildNumber
-        run: echo "BUILD_NUMBER=$(git rev-list --count ${{ github.sha }})" >> $GITHUB_ENV
+        run: |
+          echo "BUILD_NUMBER=$(git rev-list --count ${{ github.sha }})" >> $GITHUB_ENV
+          echo "${{ env.BUILD_NUMBER }}"
 
       - name: Version Name
         run: |
-          $VERSION_NAME="24.04.001"
-          "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          VERSION_NAME="24.04.001"
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
 
       - name: Current Tag
         run: echo "CURRENT_QA_TAG=v.{{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA" >> $GITHUB_ENV
