@@ -93,12 +93,9 @@ jobs:
 
       - name: Current Tag
         run: |
-          TAG_PATTERN="v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA"
-          echo "Tag pattern: $TAG_PATTERN"
-          TAGS=$(git tag --list "_QA*")
-          echo "All Tags: $TAGS"
-          CURRENT_TAG=$(echo "$TAGS" | grep -E "^$TAG_PATTERN" | sort -V | tail -n 1)
-          echo "Current tag: $CURRENT_TAG"
+          TAG_PATTERN="v.${{ env.VERSION_NAME }}.*_QA"
+          CURRENT_TAG=$(git tag --list  $TAG_PATTERN | sort -V | tail -n 1)
+          echo "current: $CURRENT_TAG"
           echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
         
       # - name: prev Tag
