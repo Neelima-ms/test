@@ -52,11 +52,8 @@ jobs:
                 sha: context.sha
               })
             }
-          outputs: qa_tag
-
-      - name: Save Tag
-        run: echo "${{ steps.create_qa_tag.outputs.qa_tag }}" >>  $env:GITHUB_ENV
-        
+   outputs:
+     uniquebuildno: ${{ env.BUILD_NUMBER }}
         
   updateConfluence:
     name: Geneate Change log 
@@ -76,7 +73,7 @@ jobs:
 
       - name: Set BuildNumber
         run: |
-          echo "BUILD_NUMBER=$(git rev-list --count ${{ github.sha }})" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=${{ needs.Push-artifact.outputs.uniqueBuildNumber }}" >> $GITHUB_ENV
           echo "${{ env.BUILD_NUMBER }}"
 
       - name: Version Name
@@ -88,7 +85,7 @@ jobs:
         run: echo "CURRENT_QA_TAG=v.${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA" >> $GITHUB_ENV
         
       - name: prev Tag
-        run:  echo "PREVIOUS_QA_TAG=$(git tag --list "QA*" --sort=-v:refname | grep -B1 "${{ env.CURRENT_QA_TAG }}" | head -n 1)" >> $GITHUB_ENV
+        run:  echo "PREVIOUS_QA_TAG=$(git tag --list ".QA*" --sort=-v:refname | grep "${{ env.CURRENT_QA_TAG }}" | tail -n1)" >> $GITHUB_ENV
       - name: Change Log
         id: Changelog
         run: |
