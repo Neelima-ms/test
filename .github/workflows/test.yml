@@ -22,7 +22,7 @@ jobs:
 
       - name: Version Name
         run: |
-          $VERSION_NAME="24.04.001"
+          VERSION_NAME="24.04.001"
           "VERSION_NAME=$VERSION_NAME" >> $env:GITHUB_ENV
         
       - name: Create tag
