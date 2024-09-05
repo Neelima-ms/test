@@ -22,7 +22,7 @@ jobs:
 
       - name: Version Name
         run: |
-          VERSION_NAME="24.04.001"
+          $VERSION_NAME="24.04.001"
           "VERSION_NAME=$VERSION_NAME" >> $env:GITHUB_ENV
         
       - name: Create tag
@@ -85,7 +85,7 @@ jobs:
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
 
       - name: Current Tag
-        run: echo "CURRENT_QA_TAG=v.{{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA" >> $GITHUB_ENV
+        run: echo "CURRENT_QA_TAG=v.${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA" >> $GITHUB_ENV
         
       - name: prev Tag
         run:  echo "PREVIOUS_QA_TAG=$(git tag --list "*QA" --sort -V | grep -B1 "${{ env.CURRENT_QA_TAG }}" | head -n 1)" >> $GITHUB_ENV
