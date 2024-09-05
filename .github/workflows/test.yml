@@ -52,6 +52,46 @@ jobs:
                 sha: context.sha
               })
             }
-            
+          outputs: qa_tag
+
+      - name: Save Tag
+        run: echo "${{ steps.create_qa_tag.outputs.qa_tag }}" >>  $env:GITHUB_ENV
+        
+        
+  updateConfluence:
+    name: Geneate Change log 
+    needs: Push-artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      # - name: Download QA Tag
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: QA Tag
+      #     path: qa_tag.txt
+
+      - name: Get Current QA Tag
+        run: |
+          QA_TAG=${{ needs.buildForWindowsPlatform.outputs.qa_tag }}
+          echo "CURRENT_QA_TAG=$QA_Tag" >> $GITHUB_ENV
+ 
+      - name: Set Tags
+        run: |
+          echo "PREVIOUS_QA_TAG=$(git tag --list "*_QA" --sort=-v:refname | grep -B 1 "${{ env.CURRENT_QA_TAG }}" | head -n 1)" >> $GITHUB_ENV
+          echo "CURRENT_QA_TAG=${{ env.CURRENT_QA_TAG }}" >> $GITHUB_ENV
+ 
+      - name: Generate Changelog
+        run: |
+          # Generate the changelog between the previous and current tags
+          git log --pretty=format:"- %s" ${PREVIOUS_QA_TAG}..${CURRENT_QA_TAG} > changelog.txt
+          
+      - name: Print Change Log
+        run: |
+          cat changelog.txt
+ 
          
          
