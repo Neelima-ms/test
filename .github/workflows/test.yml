@@ -29,7 +29,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const refName = 'tags/v.${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}'
+            const refName = 'tags/v.${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA'
             const tagListData = await github.rest.git.listMatchingRefs({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -53,39 +53,5 @@ jobs:
               })
             }
             
-      - name: Get Previous Tag
-        run: |
-          $BUILD_NUMBER = $env:BUILD_NUMBER 
-          $PREVIOUS_BUILDNUMBER = $($BUILD_NUMBER -1)
-          $PREVIOUS_TAG = git tag --sort=-v:refname | where-object { $_ -match "v.$env:VERSION_NAME.$PREVIOUS_BUILDNUMBER" }
-          Write-output "prev tag: $PREVIOUS_TAG"
-          "PREVIOUS_TAG=$PREVIOUS_TAG" >> $env:GITHUB_ENV
-          
-      # - name: Print 
-      #   run: |
-      #     echo "Prev Tag: ${{ env.Previous_Tag }}"
-
-      - name: Get current Tag
-        run: |
-         $CURRENT_TAG = "v.$($env:VERSION_NAME).$($env:BUILD_NUMBER)"
-         Write-Output "Current tag: $CURRENT_TAG"
-         echo "CURRENT_TAG=$CURRENT_TAG" >> $env:GITHUB_ENV
-          
-      # - name: Get current Tag
-      #   run: |
-      #    git log -1 --pretty=online
-      #    $TAG_PATTERN = "v.$($env:VERSION_NAME).$($env:BUILD_NUMBER)"
-      #    Write-Output "Tag pattern: $TAG_PATTERN "
-      #    $TAGS = git tag --list "v.*"
-      #    Write-Output "All Tags: $TAGS"
-      #    $CURRENT_TAG = $TAGS | Where-Object { $_ -like $TAG_PATTERN } | Sort-Object -Descending | Select-Object -First 1
-         
-      #    Write-Output "Current tag: $CURRENT_TAG"
-      #    echo "CURRENT_TAG=$CURRENT_TAG" >> $env:GITHUB_ENV
-         
-        
-      - name: Change log
-        run: |
-         git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }}
          
          
