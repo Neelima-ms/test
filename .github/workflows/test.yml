@@ -108,6 +108,15 @@ jobs:
       - name: Print Change Log
         run: |
           cat changelog.txt
+
+      - name: clean
+        run: |
+          sed -i 's/^[a-f0-9]* //' changelog.txt
+          
+      - name: display
+        run: |   
+           cat changelog.txt
+           
  
          
          
