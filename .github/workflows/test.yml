@@ -103,7 +103,7 @@ jobs:
       - name: Change Log
         id: Changelog
         run: |
-          git log --pretty=format:"%h %s" ${{ env.PREVIOUS_QA_TAG }}..${{ env.CURRENT_QA_TAG }} > changelog.txt
+          git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} > changelog.txt
 
       - name: Print Change Log
         run: |
