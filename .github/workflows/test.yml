@@ -74,21 +74,24 @@ jobs:
       #     name: QA Tag
       #     path: qa_tag.txt
 
-      - name: Get Current QA Tag
+      - name: Set BuildNumber
+        run: echo "BUILD_NUMBER=$(git rev-list --count ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: Version Name
         run: |
-          QA_TAG=${{ needs.buildForWindowsPlatform.outputs.qa_tag }}
-          echo "CURRENT_QA_TAG=$QA_Tag" >> $GITHUB_ENV
- 
-      - name: Set Tags
+          $VERSION_NAME="24.04.001"
+          "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+
+      - name: Current Tag
+        run: echo "CURRENT_QA_TAG=v.{{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA" >> $GITHUB_ENV
+        
+      - name: prev Tag
+        run:  echo "PREVIOUS_QA_TAG=$(git tag --list "*QA" --sort -V | grep -B1 "${{ env.CURRENT_QA_TAG }}" | head -n 1)" >> $GITHUB_ENV
+      - name: Change Log
+        id: Changelog
         run: |
-          echo "PREVIOUS_QA_TAG=$(git tag --list "*_QA" --sort=-v:refname | grep -B 1 "${{ env.CURRENT_QA_TAG }}" | head -n 1)" >> $GITHUB_ENV
-          echo "CURRENT_QA_TAG=${{ env.CURRENT_QA_TAG }}" >> $GITHUB_ENV
- 
-      - name: Generate Changelog
-        run: |
-          # Generate the changelog between the previous and current tags
-          git log --pretty=format:"- %s" ${PREVIOUS_QA_TAG}..${CURRENT_QA_TAG} > changelog.txt
-          
+          git log --pretty=format:"%h %s" ${{ env.PREVIOUS_QA_TAG }}..${{ env.CURRENT_QA_TAG }} > changelog.txt
+
       - name: Print Change Log
         run: |
           cat changelog.txt
