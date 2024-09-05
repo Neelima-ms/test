@@ -19,6 +19,7 @@ jobs:
         run: |
             echo "Manual QA build"
             echo "BUILD_NUMBER=${{ env.BUILD_NUMBER }}" >> $env:GITHUB_ENV
+  
 
       - name: Version Name
         run: |
@@ -53,7 +54,7 @@ jobs:
               })
             }
    outputs:
-     uniquebuildno: ${{ env.BUILD_NUMBER }}
+    uniquebuildno: ${{ env.BUILD_NUMBER }}
         
   updateConfluence:
     name: Geneate Change log 
@@ -81,11 +82,27 @@ jobs:
           VERSION_NAME="24.04.001"
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
 
+      - name: Get Previous Tag
+        run: |
+          VERSION_NAME="${{ env.VERSION_NAME }}"
+          BUILD_NUMBER="${{ env.BUILD_NUMBER }}"
+          TAG_PATTERN="_QA*"
+          PREVIOUS_TAG=$(git tag --list = $TAG_PATTERN | sort -V | tail -2 |head -n 1)
+          echo "prev tag: $PREVIOUS_TAG"
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+
       - name: Current Tag
-        run: echo "CURRENT_QA_TAG=v.${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA" >> $GITHUB_ENV
+        run: |
+          TAG_PATTERN="v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}_QA"
+          echo "Tag pattern: $TAG_PATTERN"
+          TAGS=$(git tag --list "_QA*")
+          echo "All Tags: $TAGS"
+          CURRENT_TAG=$(echo "$TAGS" | grep -E "^$TAG_PATTERN" | sort -V | tail -n 1)
+          echo "Current tag: $CURRENT_TAG"
+          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
         
-      - name: prev Tag
-        run:  echo "PREVIOUS_QA_TAG=$(git tag --list ".QA*" --sort=-v:refname | grep "${{ env.CURRENT_QA_TAG }}" | tail -n1)" >> $GITHUB_ENV
+      # - name: prev Tag
+      #   run:  echo "PREVIOUS_QA_TAG=$(git tag --list ".QA*" --sort=-v:refname | grep "${{ env.CURRENT_QA_TAG }}" | tail -n1)" >> $GITHUB_ENV
       - name: Change Log
         id: Changelog
         run: |
