@@ -104,7 +104,7 @@ jobs:
         id: Changelog
         run: |
           git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | while read line; do
-           echo "- $line" > ./changelog.txt
+           echo "- $line" > changelog.txt
           done
            
       - name: Print Change Log
