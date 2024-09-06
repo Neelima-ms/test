@@ -4,7 +4,7 @@ on:
 
 jobs:
   Push-artifact:
-   runs-on: windows-latest
+   runs-on: ubunty
    steps:
       - name: Checkout code 
         uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
   updateConfluence:
     name: Geneate Change log 
     needs: Push-artifact
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -82,41 +82,57 @@ jobs:
           VERSION_NAME="24.04.001"
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
 
-      - name: Get Previous Tag
-        run: |
-          VERSION_NAME="${{ env.VERSION_NAME }}"
-          BUILD_NUMBER="${{ env.BUILD_NUMBER }}"
-          TAG_PATTERN="v.${{ env.VERSION_NAME }}.*_QA"
-          PREVIOUS_TAG=$(git tag --list  $TAG_PATTERN | sort -V | tail -2 |head -n 1)
-          echo "prev tag: $PREVIOUS_TAG"
-          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+      # - name: Get Previous Tag
+      #   run: |
+      #     VERSION_NAME="${{ env.VERSION_NAME }}"
+      #     BUILD_NUMBER="${{ env.BUILD_NUMBER }}"
+      #     TAG_PATTERN="v.${{ env.VERSION_NAME }}.*_QA"
+      #     PREVIOUS_TAG=$(git tag --list  $TAG_PATTERN | sort -V | tail -2 |head -n 1)
+      #     echo "prev tag: $PREVIOUS_TAG"
+      #     echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
 
-      - name: Current Tag
-        run: |
-          TAG_PATTERN="v.${{ env.VERSION_NAME }}.*_QA"
-          CURRENT_TAG=$(git tag --list  $TAG_PATTERN | sort -V | tail -n 1)
-          echo "current: $CURRENT_TAG"
-          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
-        
-      # - name: prev Tag
-      #   run:  echo "PREVIOUS_QA_TAG=$(git tag --list ".QA*" --sort=-v:refname | grep "${{ env.CURRENT_QA_TAG }}" | tail -n1)" >> $GITHUB_ENV
-      - name: Change Log
+      # - name: Current Tag
+      #   run: |
+      #     TAG_PATTERN="v.${{ env.VERSION_NAME }}.*_QA"
+      #     CURRENT_TAG=$(git tag --list  $TAG_PATTERN | sort -V | tail -n 1)
+      #     echo "current: $CURRENT_TAG"
+      #     echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
+
+      - name: Changelog
+        uses: Bullrich/generate-release-changelog@master
         id: Changelog
-        run: |
-          git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} > changelog.txt
-           
-      - name: Print Change Log
-        run: |
-          cat changelog.txt
+        env:
+          REPO: ${{ github.repository }}
 
-      - name: clean
-        run: |
-          sed -i '' 's/^[a-f0-9]* //' changelog.txt
-          sed -i '' 's/^/- /' changelog.txt
           
-      - name: display
-        run: |   
-           cat changelog.txt
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v.${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}
+          release_name: Release ${{ github.ref }}
+        
+      # # - name: prev Tag
+      # #   run:  echo "PREVIOUS_QA_TAG=$(git tag --list ".QA*" --sort=-v:refname | grep "${{ env.CURRENT_QA_TAG }}" | tail -n1)" >> $GITHUB_ENV
+      # - name: Change Log
+      #   id: Changelog
+      #   run: |
+      #     git log --pretty=format:"%h %s" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} > changelog.txt
+           
+      # - name: Print Change Log
+      #   run: |
+      #     cat changelog.txt
+
+      # - name: clean
+      #   run: |
+      #     sed -i '' 's/^[a-f0-9]* //' changelog.txt
+      #     sed -i '' 's/^/- /' changelog.txt
+          
+      # - name: display
+      #   run: |   
+      #      cat changelog.txt
 
          
          
