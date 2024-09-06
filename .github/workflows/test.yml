@@ -112,7 +112,7 @@ jobs:
       - name: clean
         run: |
           sed -i 's/^[a-f0-9]* //' changelog.txt
-          sed -i 's/^/* /' changelog.txt
+          sed -i 's/^/- /' changelog.txt
           
       - name: display
         run: |   
