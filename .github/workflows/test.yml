@@ -59,7 +59,7 @@ jobs:
   updateConfluence:
     name: Geneate Change log 
     needs: Push-artifact
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -111,8 +111,8 @@ jobs:
 
       - name: clean
         run: |
-          sed -i 's/^[a-f0-9]* //' changelog.txt
-          sed -i 's/^/- /' changelog.txt
+          sed -i '' 's/^[a-f0-9]* //' changelog.txt
+          sed -i '' 's/^/- /' changelog.txt
           
       - name: display
         run: |   
