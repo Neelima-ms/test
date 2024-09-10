@@ -71,12 +71,12 @@ jobs:
       - name: Upload TAG 
         uses: actions/upload-artifact@v4.3.3 
         with:
-            name: $(date +'%m_%d')
+            name: Tag4
             path: Tag.txt  
 
       - name: Get Artifact URL
         run: |
-          artifact_name=$(date +'%m_%d')
+          artifact_name=Tag4
           
           artifact_list=$(curl -s -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN }}" \
           "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts")
@@ -99,12 +99,12 @@ jobs:
         run: |
           arifact_id="${{ env.ARTIFACT_ID }}"
           curl -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN_CICD }}" \
-          -L -o $(date +'%m_%d').zip \
+          -L -o Tag4.zip \
           "https://github.com/${{ github.repository }}/actions/artifacts/${arifact_id}/zip"
 
       - name: Upload Artifact to Confluence
         run: |
-          ATTACHMENT_FILE_NAME="Tag3.zip"
+          ATTACHMENT_FILE_NAME="Tag4.zip"
           CONFLUENCE_PAGE_ID="1867778"
           CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
           AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
