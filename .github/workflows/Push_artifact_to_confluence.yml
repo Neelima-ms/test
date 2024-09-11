@@ -78,7 +78,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name:  Tag5
-          path: Tag.txt
+          # path: Tag.txt
 
       - name: Get Artifact URL
         run: |
