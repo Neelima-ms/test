@@ -101,52 +101,52 @@ jobs:
           echo "Artifact Url: $artifact_url"
           echo "ARTIFACT_URL=$artifact_url" >> $GITHUB_ENV
 
-      - name: Upload Artifact to Confluence
-        run: |
-          ATTACHMENT_FILE_NAME="Tag1.txt"
-          CONFLUENCE_PAGE_ID="1867778"
-          CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
-          AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
-          USER_NAME="neelimasudhakar95@gmail.com"
-       
-          # Upload the attachment
-          ATTACHMENT_TITLE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-          -X POST \
-          -H "X-Atlassian-Token: nocheck" \
-          -F "file=@${ATTACHMENT_FILE_NAME}" \
-          -F "comment=File attached via GitHub Actions" \
-          "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment" 2>/dev/null \
-          | jq -r '.results[].title')
-
       # - name: Upload Artifact to Confluence
       #   run: |
-      #     ATTACHMENT_FILE_NAME="Tag.txt"  
+      #     ATTACHMENT_FILE_NAME="Tag1.txt"
       #     CONFLUENCE_PAGE_ID="1867778"
       #     CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
       #     AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
       #     USER_NAME="neelimasudhakar95@gmail.com"
-           
-      #     # Upload the file as an attachment
-      #     RESPONSE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+       
+      #     # Upload the attachment
+      #     ATTACHMENT_TITLE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
       #     -X POST \
       #     -H "X-Atlassian-Token: nocheck" \
       #     -F "file=@${ATTACHMENT_FILE_NAME}" \
       #     -F "comment=File attached via GitHub Actions" \
-      #     "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment")
+      #     "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment" 2>/dev/null \
+      #     | jq -r '.results[].title')
 
-      #     echo " Response: $RESPONSE"
+      - name: Upload Artifact to Confluence
+        run: |
+          ATTACHMENT_FILE_NAME="Tag1.txt"  
+          CONFLUENCE_PAGE_ID="1867778"
+          CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
+          AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
+          USER_NAME="neelimasudhakar95@gmail.com"
+           
+          # Upload the file as an attachment
+          RESPONSE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+          -X POST \
+          -H "X-Atlassian-Token: nocheck" \
+          -F "file=@${ATTACHMENT_FILE_NAME}" \
+          -F "comment=File attached via GitHub Actions" \
+          "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment")
+
+          echo " Response: $RESPONSE"
              
-      #     ATTACHMENT_TITLE=$(echo $RESPONSE | jq -r '.results[0].title')
+          ATTACHMENT_TITLE=$(echo $RESPONSE | jq -r '.results[0].title')
           
-      #     # Check if the title was extracted
-      #     if [ -z "$ATTACHMENT_TITLE" ]; then
-      #       echo "Error: Unable to extract attachment title."
-      #       exit 1
-      #     else
-      #       ATTACHMENT_LINK="${CONFLUENCE_BASE_URL}/wiki/download/attachments/${CONFLUENCE_PAGE_ID}/${ATTACHMENT_TITLE}"
-      #       echo "Attachment URL: ${ATTACHMENT_LINK}"
-      #       echo "ATTACHMENT_LINK=$ATTACHMENT_LINK" >> $GITHUB_ENV
-      #     fi
+          # Check if the title was extracted
+          if [ -z "$ATTACHMENT_TITLE" ]; then
+            echo "Error: Unable to extract attachment title."
+            exit 1
+          else
+            ATTACHMENT_LINK="${CONFLUENCE_BASE_URL}/wiki/download/attachments/${CONFLUENCE_PAGE_ID}/${ATTACHMENT_TITLE}"
+            echo "Attachment URL: ${ATTACHMENT_LINK}"
+            echo "ATTACHMENT_LINK=$ATTACHMENT_LINK" >> $GITHUB_ENV
+          fi
                 
 
           
