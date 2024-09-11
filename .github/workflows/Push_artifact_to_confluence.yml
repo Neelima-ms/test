@@ -101,29 +101,71 @@ jobs:
           echo "Artifact Url: $artifact_url"
           echo "ARTIFACT_URL=$artifact_url" >> $GITHUB_ENV
 
-      # - name: Download Artifact
+      # - name: Upload Artifact to Confluence
       #   run: |
-      #     arifact_id="${{ env.ARTIFACT_ID }}"
-      #     curl -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN_CICD }}" \
-      #     -L -o Tag5.zip \
-      #     "https://github.com/${{ github.repository }}/actions/artifacts/${arifact_id}/zip"
+      #     ATTACHMENT_FILE_NAME="Tag.txt"
+      #     CONFLUENCE_PAGE_ID="1867778"
+      #     CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
+      #     AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
+      #     USER_NAME="neelimasudhakar95@gmail.com"
+       
+      #     # Upload the attachment
+      #     ATTACHMENT_TITLE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+      #     -X POST \
+      #     -H "X-Atlassian-Token: nocheck" \
+      #     -F "file=@${ATTACHMENT_FILE_NAME}" \
+      #     -F "comment=File attached via GitHub Actions" \
+      #     "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment" 2>/dev/null \
+      #     | jq -r '.results[].title')
 
       - name: Upload Artifact to Confluence
         run: |
-          ATTACHMENT_FILE_NAME="Tag.txt"
+          ATTACHMENT_FILE_NAME="Tag.txt"  
           CONFLUENCE_PAGE_ID="1867778"
           CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
           AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
           USER_NAME="neelimasudhakar95@gmail.com"
-       
-          # Upload the attachment
-          ATTACHMENT_TITLE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-          -X POST \
-          -H "X-Atlassian-Token: nocheck" \
-          -F "file=@${ATTACHMENT_FILE_NAME}" \
-          -F "comment=File attached via GitHub Actions" \
-          "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment" 2>/dev/null \
-          | jq -r '.results[].title')
+           
+          # Upload the file as an attachment
+          RESPONSE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+             -X POST \
+             -H "X-Atlassian-Token: nocheck" \
+             -F "file=@${ATTACHMENT_FILE_NAME}" \
+             -F "comment=File attached via GitHub Actions" \
+             "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}/child/attachment")
+           
+          ATTACHMENT_TITLE=$(echo $RESPONSE | jq -r '.results[0].title')
+          ATTACHMENT_LINK="${CONFLUENCE_BASE_URL}/wiki/download/attachments/${CONFLUENCE_PAGE_ID}/${ATTACHMENT_TITLE}"
+           
+          echo "Attachment URL: ${ATTACHMENT_LINK}"
+           
+          # Now embed the attachment link into the page
+          PAGE_UPDATE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+            -X PUT \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "version": {
+                "number": 2
+               },
+               "title": "Your Page Title",
+               "type": "page",
+               "body": {
+                 "storage": {
+                   "value": "<p>Here is the artifact link: <a href=\"'${ATTACHMENT_LINK}'\">Download Artifact</a></p>",
+                    "representation": "storage"
+                  }
+                }
+              }' \
+              "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}")
+           
+           echo "Page updated with artifact link."
+
+          
+
+
+
+
+          
        
       #     # Check if the attachment was uploaded successfully
       #     if [ "${ATTACHMENT_TITLE}" = "${ATTACHMENT_FILE_NAME}" ]; then
