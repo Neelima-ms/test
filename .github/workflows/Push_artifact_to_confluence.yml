@@ -71,18 +71,18 @@ jobs:
       - name: Upload TAG 
         uses: actions/upload-artifact@v4.3.3 
         with:
-            name: Tag5
+            name: Tag6
             path: Tag.txt  
 
       - name: Download Android Artifact
         uses: actions/download-artifact@v4
         with:
-          name:  Tag5
+          name:  Tag6
           # path: Tag.txt
 
       - name: Get Artifact URL
         run: |
-          artifact_name=Tag5
+          artifact_name=Tag6
           
           artifact_list=$(curl -s -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN }}" \
           "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts")
