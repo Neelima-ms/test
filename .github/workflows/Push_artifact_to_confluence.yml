@@ -66,19 +66,19 @@ jobs:
 
       - name: save tag for QA Reference 
         if: ${{ success() }}
-        run: echo "$(date +'%m_%d')" > Tag.txt
+        run: echo "$(date +'%m_%d')" > Tag1.txt
             
       - name: Upload TAG 
         uses: actions/upload-artifact@v4.3.3 
         with:
             name: Tag6
-            path: Tag.txt  
+            path: Tag1.txt  
 
       - name: Download Android Artifact
         uses: actions/download-artifact@v4
         with:
           name:  Tag6
-          # path: Tag.txt
+          # path: Tag1.txt
 
       - name: Get Artifact URL
         run: |
@@ -103,7 +103,7 @@ jobs:
 
       - name: Upload Artifact to Confluence
         run: |
-          ATTACHMENT_FILE_NAME="Tag.txt"
+          ATTACHMENT_FILE_NAME="Tag1.txt"
           CONFLUENCE_PAGE_ID="1867778"
           CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
           AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
