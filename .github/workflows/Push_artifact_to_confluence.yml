@@ -66,19 +66,19 @@ jobs:
 
       - name: save tag for QA Reference 
         if: ${{ success() }}
-        run: echo "$(date +'%m_%d')" > Tag1.txt
+        run: echo "$(date +'%m_%d')" > Tag2.txt
             
       - name: Upload TAG 
         uses: actions/upload-artifact@v4.3.3 
         with:
             name: Tag6
-            path: Tag1.txt  
+            path: Tag2.txt  
 
       - name: Download Android Artifact
         uses: actions/download-artifact@v4
         with:
           name:  Tag6
-          # path: Tag1.txt
+          # path: Tag2.txt
 
       - name: Get Artifact URL
         run: |
@@ -120,7 +120,7 @@ jobs:
 
       - name: Upload Artifact to Confluence
         run: |
-          ATTACHMENT_FILE_NAME="Tag1.txt"  
+          ATTACHMENT_FILE_NAME="Tag2.txt"  
           CONFLUENCE_PAGE_ID="1867778"
           CONFLUENCE_BASE_URL="https://neelimasudhakar.atlassian.net/wiki"
           AUTH_API_TOKEN="${{ secrets.AUTH_API_TOKEN }}"
@@ -143,7 +143,7 @@ jobs:
             echo "Error: Unable to extract attachment title."
             exit 1
           else
-            ATTACHMENT_LINK="${CONFLUENCE_BASE_URL}/wiki/download/attachments/${CONFLUENCE_PAGE_ID}/${ATTACHMENT_TITLE}"
+            ATTACHMENT_LINK="${CONFLUENCE_BASE_URL}/download/attachments/${CONFLUENCE_PAGE_ID}/${ATTACHMENT_TITLE}"
             echo "Attachment URL: ${ATTACHMENT_LINK}"
             echo "ATTACHMENT_LINK=$ATTACHMENT_LINK" >> $GITHUB_ENV
           fi
