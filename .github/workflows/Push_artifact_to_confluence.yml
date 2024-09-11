@@ -143,7 +143,7 @@ jobs:
       - name: Save Test results to .md file
         run: |
           echo "## Automation Test Results:" >> ./docs/commits.md
-          echo "Automation Result Attachment Url: [Download Here](${{ env.ARTIFACT_URL }})" ./docs/commits.md
+          echo "Automation Result Attachment Url: [Download Here](${{ env.ARTIFACT_URL }})" >> ./docs/commits.md
           # cat PortalAutomationScenarios/reports >> ./docs/commits.md
 
 
@@ -172,88 +172,6 @@ jobs:
           #  echo "Page updated with artifact link."
 
           
-
-
-
-
-          
-       
-      #     # Check if the attachment was uploaded successfully
-      #     if [ "${ATTACHMENT_TITLE}" = "${ATTACHMENT_FILE_NAME}" ]; then
-      #       echo "File ${ATTACHMENT_TITLE} uploaded to page ${CONFLUENCE_PAGE_ID}"
-       
-      #       # Get the page content and metadata
-      #       REST_CONTENT_FULL_OUTPUT=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-      #       "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}?expand=body.storage,version,space" 2>/dev/null)
-       
-      #       # Extract the current version number
-      #       VERSION_NUMBER=$(echo "$REST_CONTENT_FULL_OUTPUT" | jq -r '.version.number')
-      #       NEW_VERSION=$((VERSION_NUMBER + 1))
-       
-      #       # Update the page with the attachment link
-      #       UPDATED_CONTENT=$(echo "$REST_CONTENT_FULL_OUTPUT" | jq --arg ATTACHMENT_FILE_NAME "${ATTACHMENT_FILE_NAME}" \
-      #         '.body.storage.value += "<p><a href=\"/wiki/download/attachments/'${CONFLUENCE_PAGE_ID}'/\($ATTACHMENT_FILE_NAME)\">Download ZIP File: \($ATTACHMENT_FILE_NAME)</a></p>" | {body: {storage: {value: .body.storage.value, representation: .body.storage.representation}}, id: .id, type: .type, title: .title, space: {key: .space.key}, version: {number: '$NEW_VERSION'}}')
-       
-      #       # Save the updated content to a temporary file
-      #       echo "$UPDATED_CONTENT" > modified-page-data.json
-       
-      #       # Update the Confluence page with the modified content
-      #       MODIFIED_PAGE_ID=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-      #       -X PUT \
-      #       -H 'Content-Type: application/json' \
-      #       --data @modified-page-data.json \
-      #       "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}" 2>/dev/null \
-      #       | jq -r '.id')
-       
-      #       # Verify if the page update was successful
-      #       if [ "${MODIFIED_PAGE_ID}" = "${CONFLUENCE_PAGE_ID}" ]; then
-      #         echo "Page ${CONFLUENCE_PAGE_ID} successfully updated."
-      #       else
-      #         echo "Failed to update page ${CONFLUENCE_PAGE_ID}."
-      #       fi
-      #     else
-      #       echo "Failed to upload file to page ${CONFLUENCE_PAGE_ID}"
-      #     fi
-       
-       
-
-      # - name: Get Page Content
-      #   id: get_page_content
-      #   run: |
-      #     response=$(curl -u ${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }} \
-      #       -X GET \
-      #       "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778?expand=body.storage")
-      #     echo "::set-output name=content::$response"
-      #     echo "::set-output name=version_number::$(echo "$response" | jq -r '.version.number')"
- 
-      # - name: Update Page with Attachment Link
-      #   run: |
-      #     version_number=${{ steps.get_page_content.outputs.version_number }}
-      #     new_version=$((version_number + 1))
-      #     content_url="https://neelimasudhakar.atlassian.net/wiki/download/attachments/1867778/Tag.zip?api=v2"
-      #     updated_content=$(cat <<EOF
-      #     {
-      #       "id": "1867778",
-      #       "type": "page",
-      #       "title": "Back-end 24.03",
-      #       "body": {
-      #         "storage": {
-      #           "value": "</p>Back-end 24.03</p><p>N<p><p>ch by title</p><p.Owned by NeelimaMaddela</p><p>Last updated: 3 minutes ago 1 min read 1 person viewed</p><p>Getting started in</p><p>-07-24 M</p><p>DRAFT</p><p>Test Result</p><p>ntitled whiteboard</p><p>ses</p><p>status: FAIL</p><p>My Deployments</p><p>4.03</p><p>Latest commits.md</p><p><a herf=\"$content_url\">Download Tag.zip</a></p>",
-      #           "representation": "storage"
-      #         }
-      #       },
-
-      #       "version": {
-      #         "number": $new_version
-      #       }
-      #     }
-      #     EOF
-      #     )
-      #              curl -u ${{ secrets.CONFLUENCE_USER }}:${{ secrets.CONFLUENCE_API_TOKEN }} \
-      #               -X PUT \
-      #               -H "Content-Type: application/json" \
-      #               -d "$updated_content" \
-      #               "https://neelimasudhakar.atlassian.net/wiki/rest/api/content/1867778"
             
       - uses: cupcakearmy/confluence-markdown-sync@v1
         with:
