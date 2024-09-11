@@ -95,12 +95,12 @@ jobs:
           echo "Artifact Url: $artifact_url"
           echo "ARTIFACT_URL=$artifact_url" >> $GITHUB_ENV
 
-      # - name: Download Artifact
-      #   run: |
-      #     arifact_id="${{ env.ARTIFACT_ID }}"
-      #     curl -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN_CICD }}" \
-      #     -L -o Tag5.zip \
-      #     "https://github.com/${{ github.repository }}/actions/artifacts/${arifact_id}/zip"
+      - name: Download Artifact
+        run: |
+          arifact_id="${{ env.ARTIFACT_ID }}"
+          curl -H "Authorization: token ${{ secrets.GIT_ACCESSTOKEN_CICD }}" \
+          -L -o Tag5.zip \
+          "https://github.com/${{ github.repository }}/actions/artifacts/${arifact_id}/zip"
 
       - name: Upload Artifact to Confluence
         run: |
