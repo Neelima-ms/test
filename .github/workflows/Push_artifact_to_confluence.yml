@@ -138,27 +138,38 @@ jobs:
           ATTACHMENT_LINK="${CONFLUENCE_BASE_URL}/wiki/download/attachments/${CONFLUENCE_PAGE_ID}/${ATTACHMENT_TITLE}"
            
           echo "Attachment URL: ${ATTACHMENT_LINK}"
+          echo "ARTIFACT_URL=$artifact_url" >> $GITHUB_ENV
+
+      - name: Save Test results to .md file
+        run: |
+          echo "## Automation Test Results:" >> ./docs/commits.md
+          echo "Automation Result Attachment Url: [Download Here](${{ env.ARTIFACT_URL }})" ./docs/commits.md
+          # cat PortalAutomationScenarios/reports >> ./docs/commits.md
+
+
+
+          
            
-          # Now embed the attachment link into the page
-          PAGE_UPDATE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
-            -X PUT \
-            -H 'Content-Type: application/json' \
-            -d '{
-              "version": {
-                "number": 2
-               },
-               "title": "Back-end 24.03",
-               "type": "page",
-               "body": {
-                 "storage": {
-                   "value": "<p>Here is the artifact link: <a href=\"'${ATTACHMENT_LINK}'\">Download Artifact</a></p>",
-                    "representation": "storage"
-                  }
-                }
-              }' \
-              "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}")
+          # # Now embed the attachment link into the page
+          # PAGE_UPDATE=$(curl -u $USER_NAME:$AUTH_API_TOKEN \
+          #   -X PUT \
+          #   -H 'Content-Type: application/json' \
+          #   -d '{
+          #     "version": {
+          #       "number": 2
+          #      },
+          #      "title": "Back-end 24.03",
+          #      "type": "page",
+          #      "body": {
+          #        "storage": {
+          #          "value": "<p>Here is the artifact link: <a href=\"'${ATTACHMENT_LINK}'\">Download Artifact</a></p>",
+          #           "representation": "storage"
+          #         }
+          #       }
+          #     }' \
+          #     "${CONFLUENCE_BASE_URL}/rest/api/content/${CONFLUENCE_PAGE_ID}")
            
-           echo "Page updated with artifact link."
+          #  echo "Page updated with artifact link."
 
           
 
