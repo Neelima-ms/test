@@ -158,7 +158,7 @@ jobs:
       - name: Save Test results to .md file
         run: |
           echo "## Automation Test Results:" >> ./docs/commits.md
-          echo "Automation Result Attachment Url: [Download Here](${{ env.ARTIFACT_URL }})" >> ./docs/commits.md
+          echo "Automation Result Attachment Url: [Download Here](${{ env.ATTACHMENT_LINK }})" >> ./docs/commits.md
           
 
 
