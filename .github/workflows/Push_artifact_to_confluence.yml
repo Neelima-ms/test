@@ -136,15 +136,18 @@ jobs:
            
           ATTACHMENT_TITLE=$(echo $RESPONSE | jq -r '.results[0].title')
           ATTACHMENT_LINK="${CONFLUENCE_BASE_URL}/wiki/download/attachments/${CONFLUENCE_PAGE_ID}/${ATTACHMENT_TITLE}"
-           
+
+          
+      - name: Print
+        run: |
           echo "Attachment URL: ${ATTACHMENT_LINK}"
-          echo "ARTIFACT_URL=$artifact_url" >> $GITHUB_ENV
+          echo "ATTACHMENT_LINK=$ATTACHMENT_LINK" >> $GITHUB_ENV
 
       - name: Save Test results to .md file
         run: |
           echo "## Automation Test Results:" >> ./docs/commits.md
           echo "Automation Result Attachment Url: [Download Here](${{ env.ARTIFACT_URL }})" >> ./docs/commits.md
-          # cat PortalAutomationScenarios/reports >> ./docs/commits.md
+          
 
 
 
