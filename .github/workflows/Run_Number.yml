@@ -35,7 +35,7 @@ jobs:
  
             // Filter runs for the target environment
             const previousRun = workflowRuns.workflow_runs
-              .fliter(run => run.name === runName && run.id !== currentRunId)
+              .filter(run => run.name === runName && run.id !== currentRunId)
               .sort((a, b) => b.run_number - a.run_number)
               .shift();
  
