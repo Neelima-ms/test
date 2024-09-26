@@ -1,4 +1,4 @@
-run-name: test, runnumber - ${{ github.event.inputs.environment }}
+run-name: test, runnumber ${{ github.event.inputs.environment }}
 'on': 
  workflow_dispatch:
     inputs:
@@ -18,42 +18,68 @@ jobs:
         with:
           fetch-depth: 0
 
-
       - uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GIT_ACCESSTOKEN }}
           script: |
-            const { owner, repo } = context.repo;
-            const environment = '${{ github.event.inputs.environment }}';
-            const dynamicWorkflowName = `test, runnumber - ${{ github.event.inputs.environment }}`;
-            try {
-              const { data: runs } = await github.actions.listWorkflowRunsForRepo({
-                owner,
-                repo,
-                per_page: 2,
-                status: 'completed',
-              });
-              
-              const envRuns = runs.workflow_runs.filter(run => run.name === dynamicWorkflowName && (run.event === 'workflow_dispatch' || run.event === 'schedule'));
-              
-              if (envRuns.length > 0) {
-                const previousRunId = envRuns[0].id;
-                const { data: previousRunDetails } = await github.actions.getWorkflowRun({
-                  owner,
-                  repo,
-                  run_id: previousRunId,
-                });
-                
-                const previousRunNumber = previousRunDetails.run_number;
-                console.log(`Found previous run number: ${previousRunNumber}`);
-                return previousRunNumber;
-              } else {
-                throw new Error('No previous run found for the specified environment.');
-              }
-            } catch (error) {
-              console.error(`Error retrieving previous run: ${error.message}`);
-              throw error;
+            const targetEnvironment = 'qa'; // Specify the environment you want to check
+            const runName = `test, runnumber ${targetEnvironment}`; // Dynamic run name for 'qa'
+            
+            const { data: workflowRuns } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'Run_Number.yml', // Replace with your specific workflow file name
+              per_page: 2 // Adjust if you want to check more runs
+            });
+ 
+            // Filter runs for the target environment
+            const previousRun = workflowRuns.workflow_runs.find(run => run.name === runName);
+ 
+            if (previousRun) {
+              console.log(`Found previous QA run: ${previousRun.run_number}`);
+              return previousRun.run_number; // Return or use as needed
+            } else {
+              console.log('No previous run found for the QA environment.');
+              return null; // Handle the case where there is no previous run
             }
+
+
+
+      # - uses: actions/github-script@v7
+      #   with:
+      #     github-token: ${{ secrets.GIT_ACCESSTOKEN }}
+      #     script: |
+      #       const { owner, repo } = context.repo;
+      #       const environment = '${{ github.event.inputs.environment }}';
+      #       const dynamicWorkflowName = `test, runnumber - ${{ github.event.inputs.environment }}`;
+      #       try {
+      #         const { data: runs } = await github.actions.listWorkflowRunsForRepo({
+      #           owner,
+      #           repo,
+      #           per_page: 2,
+      #           status: 'completed',
+      #         });
+              
+      #         const envRuns = runs.workflow_runs.filter(run => run.name === dynamicWorkflowName && (run.event === 'workflow_dispatch' || run.event === 'schedule'));
+              
+      #         if (envRuns.length > 0) {
+      #           const previousRunId = envRuns[0].id;
+      #           const { data: previousRunDetails } = await github.actions.getWorkflowRun({
+      #             owner,
+      #             repo,
+      #             run_id: previousRunId,
+      #           });
+                
+      #           const previousRunNumber = previousRunDetails.run_number;
+      #           console.log(`Found previous run number: ${previousRunNumber}`);
+      #           return previousRunNumber;
+      #         } else {
+      #           throw new Error('No previous run found for the specified environment.');
+      #         }
+      #       } catch (error) {
+      #         console.error(`Error retrieving previous run: ${error.message}`);
+      #         throw error;
+      #       }
       
  
       - name: Echo Previous Run Number
