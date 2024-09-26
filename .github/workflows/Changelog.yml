@@ -70,4 +70,21 @@ jobs:
         run: echo "BUILD_NUMBER=${{ needs.tag.outputs.uniqueBuildNumber }}" >> $GITHUB_ENV
 
 
+      - name: Get QA Current Tag
+        run: |
+          TAG_PATTERN="v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}"
+          echo "Tag pattern: $TAG_PATTERN"
+          TAGS=$(git tag --list "v${{ env.VERSION_NAME }}*")
+          echo "All Tags: $TAGS"
+          CURRENT_TAG=$(echo "$TAGS" | grep -E "^$TAG_PATTERN" | sort -V | tail -n 1)
+          echo "Current tag: $CURRENT_TAG"
+          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
+
+      - name: Get QA prev Tag
+        run: |
+          previous_qa_tag=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -B 1 "$CURRENT_TAG" | head -n 1)
+          echo $previous_qa_tag
+
+
+
       
