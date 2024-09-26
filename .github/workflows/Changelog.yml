@@ -3,7 +3,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  Push-artifact:
+  tag:
    runs-on: windows-latest
    steps:
       - name: Checkout code 
@@ -11,25 +11,63 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get Current Tag
-        run: |  
-         $CURRENT_SHA = git rev-parse HEAD
-         echo "$CURRENT_SHA=$CURRENT_SHA" >> $env:GITHUB_ENV
-         Write-Output "Current Commit SHA: $CURRENT_SHA"  
+      - name: Generate build number
+        uses: onyxmueller/build-tag-number@v1
+        with:
+         token: ${{secrets.github_token}} 
 
-      - name: Save Current Commit
+      - name: Manual QA
         run: |
-          $CURRENT_SHA = $env:CURRENT_SHA
-          $CURRENT_SHA | Out-File -FilePath "Prev_commit.txt"
-          Write-Output "Prev_commit.txt updated with: $CURRENT_SHA"
-          Get-Content -Path "Prev_commit.txt"
+            echo "Manual QA build"
+            echo "BUILD_NUMBER=${{ env.BUILD_NUMBER }}" >> $env:GITHUB_ENV
+
+      - name: Create tag
+        if: ${{ !contains(github.ref, 'task/') &&  !inputs.TestingBuild }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const refName = 'tags/v24.01.001.${{ env.BUILD_NUMBER }}'
+            const tagListData = await github.rest.git.listMatchingRefs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: refName
+            })
+            const tagList = tagListData.data
+            console.log(tagList)
+            if (tagList.length > 0)
+            {
+              console.log("Tag already exists.")
+              return
+            }
+            else
+            {
+              console.log("Creating a new tag.")
+              github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/' + refName,
+                sha: context.sha
+              })
+            }
+   outputs:
+      uniqueBuildNumber: ${{ env.BUILD_NUMBER }}
+
+  commit:
+    name: Deploy Android App to Firebase
+    needs: tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get the build number from previous step
+        run: echo ${{ needs.tag.outputs.uniqueBuildNumber }}
+        
+      - name: save build number
+        run: echo "BUILD_NUMBER=${{ needs.tag.outputs.uniqueBuildNumber }}" >> $GITHUB_ENV
 
 
-      - name: Display File Contents
-        run: |
-          if (Test-Path -Path "Prev_commit.txt") {
-            Get-Content -Path "Prev_commit.txt"
-          } else {
-            Write-Output "Prev_commit.txt does not exist."
-          }
-        shell: pwsh
+      
