@@ -6,8 +6,8 @@ run-name: test, runnumber ${{ github.event.inputs.environment }}
         description: 'Environment'
         required: true
         default: 'development'
- schedule:
-   - cron: '0 0 * * *'
+ # schedule:
+ #   - cron: '0 0 * * *'
 
 jobs:
     deploy:
@@ -23,6 +23,7 @@ jobs:
           github-token: ${{ secrets.GIT_ACCESSTOKEN }}
           script: |
             const targetEnvironment = 'qa'; // Specify the environment you want to check
+            const currentRunId = context.runId;
             const runName = `test, runnumber ${targetEnvironment}`; // Dynamic run name for 'qa'
             
             const { data: workflowRuns } = await github.rest.actions.listWorkflowRuns({
@@ -33,7 +34,10 @@ jobs:
             });
  
             // Filter runs for the target environment
-            const previousRun = workflowRuns.workflow_runs.find(run => run.name === runName);
+            const previousRun = workflowRuns.workflow_runs
+              .fliter(run => run.name === runName && run.id !== currentRunId)
+              .sort((a, b) => b.run_number - a.run_number)
+              .shift();
  
             if (previousRun) {
               console.log(`Found previous QA run: ${previousRun.run_number}`);
