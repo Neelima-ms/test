@@ -72,7 +72,7 @@ jobs:
 
       - name: Get QA Current Tag
         run: |
-          TAG_PATTERN="v${{ env.VERSION_NAME }}.${{ env.BUILD_NUMBER }}"
+          TAG_PATTERN="v24.01.001.${{ env.BUILD_NUMBER }}"
           echo "Tag pattern: $TAG_PATTERN"
           TAGS=$(git tag --list "v${{ env.VERSION_NAME }}*")
           echo "All Tags: $TAGS"
