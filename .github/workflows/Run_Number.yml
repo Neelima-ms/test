@@ -17,25 +17,52 @@ jobs:
           fetch-depth: 0
 
 
-      - name: Set Workflow Name
-        id: set_workflow_name
-        run: echo "workflow_name=test, runnumber - ${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GIT_ACCESSTOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const environment = '${{ github.event.inputs.environment }}';
+            const dynamicWorkflowName = `test, runnumber - ${environment}`;
  
-      - name: Get Previous Run Number
-        id: get_run_number
-        if: env.workflow_name == 'test, runnumber - ${{ github.event.inputs.environment }}'  # Change 'YOUR_WORKFLOW_NAME' to your actual workflow name
-        run: |
-          TOKEN=${{ secrets.GIT_ACCESSTOKEN }}
-          WORKFLOW_NAME="${{ env.workflow_name }}"
-          REPO="${{ github.repository }}"
-          
-          # Fetch the previous run number
-          RESPONSE=$(curl -s -H "Authorization: token $TOKEN" "https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW_NAME/runs?per_page=2")
-          PREVIOUS_RUN_NUMBER=$(echo $RESPONSE | jq -r '.workflow_runs[1].run_number')
-          
-          if [ "$PREVIOUS_RUN_NUMBER" != "null" ]; then
-            echo "Previous run number is: $PREVIOUS_RUN_NUMBER"
-            echo "previous_run_number=$PREVIOUS_RUN_NUMBER" >> $GITHUB_ENV
-          else
-            echo "No previous run found for the specified workflow."
-          fi
+            try {
+              // Get the list of workflow runs for the repository
+              const { data: runs } = await github.actions.listWorkflowRunsForRepo({
+                owner,
+                repo,
+                per_page: 5,
+                status: 'completed', // Only completed runs
+              });
+ 
+              // Filter runs based on dynamic name and event type
+              const envRuns = runs.workflow_runs.filter(run =>
+                run.name === dynamicWorkflowName &&
+                (run.event === 'workflow_dispatch' || run.event === 'schedule')
+              );
+ 
+              // Check if any runs match
+              if (envRuns.length > 0) {
+                // Get the most recent run
+                const previousRunId = envRuns[0].id;
+ 
+                // Get the details for that run
+                const { data: previousRunDetails } = await github.actions.getWorkflowRun({
+                  owner,
+                  repo,
+                  run_id: previousRunId,
+                });
+ 
+                // Extract the run number
+                const previousRunNumber = previousRunDetails.run_number;
+                console.log(`Found previous run number: ${previousRunNumber}`);
+                return previousRunNumber; // Return the run number
+              } else {
+                throw new Error('No previous run found for the specified environment.');
+              }
+            } catch (error) {
+              console.error(`Error retrieving previous run: ${error.message}`);
+              throw error; // Rethrow the error for the workflow to fail
+            }
+ 
+      - name: Echo Previous Run Number
+        run: echo "The previous run number for ${{ github.event.inputs.environment }} is ${{ steps.get_previous_run.outputs.result }}"
