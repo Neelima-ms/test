@@ -23,7 +23,7 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const environment = '${{ github.event.inputs.environment }}';
-            const dynamicWorkflowName = `Generate env file and deploy portal, EB ${environment}`;
+            const dynamicWorkflowName = `test, runnumber - ${{ github.event.inputs.environment }}`;
             try {
               const { data: runs } = await github.actions.listWorkflowRunsForRepo({
                 owner,
