@@ -16,39 +16,26 @@ jobs:
         with:
           fetch-depth: 0
 
+
+      - name: Set Workflow Name
+        id: set_workflow_name
+        run: echo "workflow_name=test, runnumber - ${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+ 
       - name: Get Previous Run Number
-        id: get_previous_run
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GIT_ACCESSTOKEN_CICD }}
-          script: |
-            const { owner, repo } = context.repo;
-            const environment = '${{ github.event.inputs.environment }}';
-            const dynamicWorkflowName = `Generate env file and deploy portal, EB - ${environment}`;
- 
-            // Get the list of runs for the repository
-            const runs = await github.actions.listWorkflowRuns({
-              owner,
-              repo,
-              workflow_id: dynamicWorkflowName,
-              per_page: 5, // Adjust this based on how far back you need to look
-              status: 'completed' // Only consider completed runs
-            });
- 
-            // Filter runs based on dynamic name and event type
-            const envRuns = runs.data.workflow_runs.filter(run =>
-              run.name === dynamicWorkflowName &&
-              (run.event === 'workflow_dispatch' || run.event === 'schedule')
-            );
- 
-            // If there are more than one matching run, get the previous one
-            if (envRuns.length > 1) {
-              const previousRunNumber = envRuns[1].run_number; // Second most recent run
-              console.log(`Found previous run number: ${previousRunNumber}`);
-              return previousRunNumber;
-            } else {
-              throw new Error('No previous run found for the specified environment.');
-            }
-            
-      - name: Echo Previous Run Number
-        run: echo "The previous run number for ${{ github.event.inputs.environment }} is ${{ steps.get_previous_run.outputs.result }}"
+        id: get_run_number
+        if: env.workflow_name == 'test, runnumber - ${{ github.event.inputs.environment }}'  # Change 'YOUR_WORKFLOW_NAME' to your actual workflow name
+        run: |
+          TOKEN=${{ secrets.GIT_ACCESSTOKEN }}
+          WORKFLOW_NAME="${{ env.workflow_name }}"
+          REPO="${{ github.repository }}"
+          
+          # Fetch the previous run number
+          RESPONSE=$(curl -s -H "Authorization: token $TOKEN" "https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW_NAME/runs?per_page=2")
+          PREVIOUS_RUN_NUMBER=$(echo $RESPONSE | jq -r '.workflow_runs[1].run_number')
+          
+          if [ "$PREVIOUS_RUN_NUMBER" != "null" ]; then
+            echo "Previous run number is: $PREVIOUS_RUN_NUMBER"
+            echo "previous_run_number=$PREVIOUS_RUN_NUMBER" >> $GITHUB_ENV
+          else
+            echo "No previous run found for the specified workflow."
+          fi
