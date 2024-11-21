@@ -19,7 +19,6 @@ jobs:
           $BUILD_NUMBER = git for-each-ref --sort=-creatordate --format '%(refname:short)' refs/tags | Select-String -Pattern '^build-number-' | Select-Object -First 1
           echo $BUILD_NUMBER
           $BUILD_NUMBER = $BUILD_NUMBER.ToString()
-          Write-Host "Full tag: $BUILD_NUMBER"
           $BUILD_NUMBER = $BUILD_NUMBER.Substring(13)
           echo $BUILD_NUMBER
           $BUILD_NUMBER = $BUILD_NUMBER | set-content file
