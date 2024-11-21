@@ -24,3 +24,7 @@ jobs:
           $BUILD_NUMBER = $BUILD_NUMBER | set-content file
           $BUILD_NUMBER = Get-Content file -tail 1
           "BUILD_NUMBER=$BUILD_NUMBER" >> $env:GITHUB_ENV
+
+      - name: Print new build number
+        id: buildnumber
+        run: echo "Build number is ${{ env.BUILD_NUMBER }}"
