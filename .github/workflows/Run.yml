@@ -1,0 +1,27 @@
+name: Run
+on:
+  workflow_dispatch: {}
+
+jobs:
+  tag:
+   runs-on: windows-latest
+   steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: BUild number
+        run: |
+          Write-Host "Manual QA build"
+          
+          # Fetch the latest tag based on creation date
+          $BUILD_NUMBER = git for-each-ref --sort=-creatordate --format '%(refname:short)' refs/tags | Select-String -Pattern '^build-number-' | Select-Object -First 1
+          echo $BUILD_NUMBER
+          $BUILD_NUMBER = $BUILD_NUMBER.ToString()
+          Write-Host "Full tag: $BUILD_NUMBER"
+          $BUILD_NUMBER = $BUILD_NUMBER.Substring(13)
+          echo $BUILD_NUMBER
+          $BUILD_NUMBER = $BUILD_NUMBER | set-content file
+          $BUILD_NUMBER = Get-Content file -tail 1
+          "BUILD_NUMBER=$BUILD_NUMBER" >> $env:GITHUB_ENV
